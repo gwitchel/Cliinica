@@ -1,42 +1,41 @@
-import React, { useEffect, useState } from 'react';
-import { useTable } from 'react-table';
-
+import React, { useState } from 'react';
+import './App.css';
+import Overview from './pages/overview/Overview';
+import Organization from './pages/organization/Organization';
+import IntakeFlows from './pages/intakeFlows/IntakeFlows';
 const App = () => {
-    const [data, setData] = useState([]);
-    const [columns, setColumns] = useState([]);
+    const [activeTab, setActiveTab] = useState('overview');
 
-    // Function to load data
-    const loadData = () => {
-        window.electronAPI.loadCsv().then((csvData) => {
-            setData(csvData);
-
-            if (csvData.length > 0) {
-                const headers = Object.keys(csvData[0]);
-                const tableColumns = headers.map((header) => ({
-                    Header: header,
-                    accessor: header,
-                }));
-                setColumns(tableColumns);
-                console.log("COLUMNS", tableColumns);
-            }
-        }).catch((error) => console.error('Error loading CSV:', error));
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
     };
 
-    useEffect(() => {
-        // Initial data load
-        loadData();
-
-        // Listen for the csv-updated event to reload data
-        window.electronAPI.onCsvUpdate(() => {
-            console.log('CSV file updated, reloading data...');
-            loadData();
-        });
-    }, []);
-
-
     return (
-        <div>
-            <h1>CSV Data Viewer</h1>
+        <div className="app">
+            <div className="tabs">
+                <button
+                    className={activeTab === 'overview' ? 'active' : ''}
+                    onClick={() => handleTabChange('overview')}
+                >
+                    Overview
+                </button>
+                <button
+                    className={activeTab === 'organization' ? 'active' : ''}
+                    onClick={() => handleTabChange('organization')}
+                >
+                    Organization
+                </button>
+                <button
+                    className={activeTab === 'intakeFlows' ? 'active' : ''}
+                    onClick={() => handleTabChange('intakeFlows')}
+                >
+                    My Intake Flows
+                </button>
+            </div>
+
+            {activeTab === 'overview' && <Overview />}
+            {activeTab === 'organization' && <Organization />}
+            {activeTab === 'intakeFlows' && <IntakeFlows />}
         </div>
     );
 };

@@ -1,0 +1,17 @@
+.org-card {
+    border-width: 1px;
+    border-style: solid;
+    border-color: #e0e0e0;
+    border-radius: 4px;
+    padding: 16px;
+    width: 150px;
+}
+
+.org-card:hover {
+    border-color: #2196f3;
+}
+.org-cards { 
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-gap: 16px;
+}

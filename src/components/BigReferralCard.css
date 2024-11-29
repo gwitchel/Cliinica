@@ -1,0 +1,63 @@
+/* Ensure the BigReferralCard grows to fit its parent */
+.big-referral-card {
+    width: '100%'; /* Ensure it spans the full width */
+    height: '100%'; /* Ensure it spans the full height */
+    padding: 20px;
+    margin-top: 20px;
+    /* border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    box-sizing: border-box; Include padding in the width */
+}
+
+.close-popup-btn {
+    background-color: #fff;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+}
+/* Style for the header section */
+.card-header {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Spacing between the fields */
+    margin-bottom: 20px;
+}
+
+/* Style for individual input fields when editing */
+.card-header input {
+    width: 100%; /* Makes input fields take the full width */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Style for the footer section */
+.card-footer {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px; /* Space between buttons */
+    margin-top: 20px;
+}
+
+/* Style for the buttons */
+
+/* Hover effect for buttons */
+
+/* Additional styling for the edit/cancel buttons */
+.card-footer button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.active-flows {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+}
