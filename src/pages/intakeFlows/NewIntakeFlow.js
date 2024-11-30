@@ -26,7 +26,7 @@ const NewIntakeFlow = ({
     console.log('Loading organizations...');
     loadOrganizations();
     
-}, []);
+  }, []);
 
   useEffect(() => {
     if (flows.length === 0) {
@@ -51,14 +51,13 @@ const NewIntakeFlow = ({
     if (referenceIndex !== null) {
       if (isParallel) {
         // Add parallel step by grouping flows at the same index
-        if (Array.isArray(updatedFlows[referenceIndex])) {
-          updatedFlows[referenceIndex].push(newFlow);
-        } else {
-          updatedFlows[referenceIndex] = [updatedFlows[referenceIndex], newFlow];
+        if (!Array.isArray(updatedFlows[referenceIndex])) {
+          updatedFlows[referenceIndex] = [updatedFlows[referenceIndex]]; // Wrap single objects in an array
         }
+        updatedFlows[referenceIndex].push(newFlow);
       } else {
         // Add sequential step by inserting into the next index
-        updatedFlows.splice(referenceIndex + 1, 0, newFlow);
+        updatedFlows.splice(referenceIndex + 1, 0, [newFlow]); // Always insert as an array
       }
     }
     setFlows(updatedFlows);

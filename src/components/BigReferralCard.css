@@ -1,14 +1,18 @@
 /* Ensure the BigReferralCard grows to fit its parent */
 .big-referral-card {
-    width: '100%'; /* Ensure it spans the full width */
-    height: '100%'; /* Ensure it spans the full height */
+    width: 100%; /* Ensure it spans the full width */
+    height: 100%; /* Ensure it spans the full height */
     padding: 20px;
-    margin-top: 20px;
-    /* border: 1px solid #ddd;
+    overflow: auto; /* Enable scrolling for overflow content */
+    display: flex; /* For better child alignment */
+    flex-direction: column; /* Ensure content stacks vertically */
+    gap: 10px; /* Optional: Adds spacing between child elements */
+
+    border: 1px solid #ddd;
     border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     background-color: #fff;
-    box-sizing: border-box; Include padding in the width */
+    box-sizing: border-box; /* Include padding in the width and height */
 }
 
 .close-popup-btn {
@@ -44,6 +48,11 @@
     margin-top: 20px;
 }
 
+.tabs { 
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
 /* Style for the buttons */
 
 /* Hover effect for buttons */

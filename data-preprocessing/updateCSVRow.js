@@ -30,15 +30,15 @@ async function updateCSVRow( fileName, MRN, updatedColumns) {
 
                         if (Array.isArray(row)) {
                             if (row[columnIndex] !== newValue) {
-                                // Update the changelog if the file is referrals-legacy
-                                if (fileName === 'referrals-legacy') updateChangelog(new Date().toISOString(), MRN, column, newValue, row[columnIndex], userProfile._id);
+                                // Update the changelog if the file is 
+                                if (fileName === 'patients') updateChangelog(new Date().toISOString(), MRN, column, newValue, row[columnIndex], userProfile._id);
                                 row[columnIndex] = newValue; // Update array row by index
 
                             }
                         } else {
                             if (row[column] !== newValue) {
-                                // Update the changelog if the file is referrals-legacy
-                                if (fileName === 'referrals-legacy') updateChangelog(new Date().toISOString(), MRN, column, newValue, row[column], userProfile._id);
+                                // Update the changelog if the file is 
+                                if (fileName === 'patients') updateChangelog(new Date().toISOString(), MRN, column, newValue, row[column], userProfile._id);
                                 row[column] = newValue; // Update object row by column name
                             }
                         }
@@ -76,6 +76,37 @@ async function updateCSVRow( fileName, MRN, updatedColumns) {
 
 }
 
+async function deleteCSVRow( fileName, MRN) {
+    window.electron.loadCsv(fileName).then((data) => {
+        // Clean the headers by trimming whitespace and ensuring they're consistent
+        const headers = Array.isArray(data[0]) ? data[0].map(header => header.trim()) : Object.keys(data[0]).map(header => header.trim());
+        
+        // Get the rows (after the header)
+        const rows = Array.isArray(data[0]) ? data.slice(1) : data;
+        
+        // Iterate through each row and update the matching MRN
+        const updatedRows = rows.filter((row) => {
+            // Get the MRN column value (either from an object or an array)
+            const currentMRN = Array.isArray(row) ? row[headers.indexOf('MRN')] : row.MRN;
+
+            // If the MRN matches, update the row with the new column values
+            if (currentMRN === MRN) {
+                return false;
+            }
+            return true;
+        });
+
+
+        // Save the updated rows back to the CSV file using the existing saveCsvFile function
+        window.electron.saveCsvFile(`${fileName}.csv`, [...updatedRows]);
+        console.log('Referral updated successfully');
+    }).catch((err) => {
+        console.error('Error loading CSV file:', err);
+    });
+
+}
+
+
 async function updateChangelog( date, MRN, field, newValue, oldValue, changed_by) {
     // Load the processed-referrals.csv using Electron's loadCsv API
     const changeLog = await window.electron.loadCsv('changelog');
@@ -95,4 +126,4 @@ async function updateChangelog( date, MRN, field, newValue, oldValue, changed_by
     console.log('Changelog updated successfully');
 }
 
-module.exports = { updateCSVRow };
+module.exports = { updateCSVRow, deleteCSVRow };

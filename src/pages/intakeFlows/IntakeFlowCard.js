@@ -32,7 +32,7 @@ const IntakeFlowCard = ({ flow, onUpdate }) => {
         }}
         onClick={toggleExpansion}
       >
-        <h3>{flow.title}</h3>
+        <h3>{flow.title || ''}</h3>
         <button>{isExpanded ? "Collapse" : "Expand"}</button>
       </div>
       {isExpanded ? (
@@ -43,7 +43,7 @@ const IntakeFlowCard = ({ flow, onUpdate }) => {
         />
       ) : (
         <div>
-          <h1>{flow.data.title}</h1>
+          <h1>{flow.data.title || ''}</h1>
           <p>{flow.data.description}</p>
         </div>
       )}

@@ -1,0 +1,72 @@
+/* Default styling for a generic card */
+.little-flow-card {
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    box-sizing: border-box;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Active card styling */
+.little-flow-card-active {
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border: 2px solid #000; /* Emphasized border */
+    background-color: antiquewhite;
+    box-sizing: border-box;
+    transition: all 0.3s ease-in-out;
+}
+
+.little-flow-card-container {
+    display: flex;
+    align-items: stretch; /* Ensures children stretch to the tallest height */
+    gap: 20px; /* Optional: Adds spacing between cards */
+}
+.little-flow-card-row {
+    width: 100%; /* Ensure it spans the full width */
+    display: flex; /* Enable horizontal scrolling */
+    flex-direction: row;
+    overflow-x: auto; /* Enable horizontal scrolling */
+    overflow-y: hidden; /* Prevent vertical scrolling */
+    white-space: nowrap; /* Prevent wrapping of child elements for horizontal scrolling */
+}
+
+/* Completed card styling */
+.little-flow-card-completed {
+    flex: 1; /* Ensures all cards grow equally */
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #d4edda; /* Light green for success */
+    border: 2px solid #155724; /* Green border for emphasis */
+    box-sizing: border-box;
+    transition: all 0.3s ease-in-out;
+    display: flex; /* To accommodate child layout */
+    flex-direction: column;
+    min-width: 200px;
+}
+/* Future card styling */
+.little-flow-card-future {
+    flex: 1; /* Ensures all cards grow equally */
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff; /* Light green for success */
+    border: 2px solid #cccccc; /* Green border for emphasis */
+    box-sizing: border-box;
+    transition: all 0.3s ease-in-out;
+    display: flex; /* To accommodate child layout */
+    flex-direction: column;
+    min-width: 200px;
+}
+

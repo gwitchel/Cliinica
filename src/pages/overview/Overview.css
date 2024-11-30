@@ -12,6 +12,20 @@
     align-items: center;
     /* margin-bottom: 20px; */
 }
+.search-controls{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    /* margin-bottom: 20px; */
+}
+.search-controls-right{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    /* margin-bottom: 20px; */
+}
 
 /* Overlay and popup container */
 .popup-overlay {
@@ -52,6 +66,7 @@
 
 .search-bar {
     width: 100%;
+    max-width: 200px;
     padding: 8px;
     margin: 10px 0;
     font-size: 16px;

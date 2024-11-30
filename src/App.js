@@ -3,6 +3,8 @@ import './App.css';
 import Overview from './pages/overview/Overview';
 import Organization from './pages/organization/Organization';
 import IntakeFlows from './pages/intakeFlows/IntakeFlows';
+import Bulletin from './pages/bulletin/bulletin';
+
 const App = () => {
     const [activeTab, setActiveTab] = useState('overview');
 
@@ -31,11 +33,18 @@ const App = () => {
                 >
                     My Intake Flows
                 </button>
+                <button
+                    className={activeTab === 'bulletin' ? 'active' : ''}
+                    onClick={() => handleTabChange('bulletin')}
+                >
+                    Bulletin
+                </button>
             </div>
 
             {activeTab === 'overview' && <Overview />}
             {activeTab === 'organization' && <Organization />}
             {activeTab === 'intakeFlows' && <IntakeFlows />}
+            {activeTab === 'bulletin' && <Bulletin />}
         </div>
     );
 };

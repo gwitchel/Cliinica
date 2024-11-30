@@ -17,5 +17,6 @@ window.electron = {
         return ipcRenderer.invoke('load-user-profile');  // Call to load the user profile
     },
     saveCsvFile: (filePath, data) => ipcRenderer.send('save-csv', filePath, data),
+    saveJsonFile: (filePath, data)=> ipcRenderer.send('save-json', filePath, data),
 
 };

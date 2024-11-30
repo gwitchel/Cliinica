@@ -1,28 +1,20 @@
-import React, { useState } from "react";
+import React from "react";
 
-const FlowComponent = ({ flow, index, peopleOptions, isEditing, onEdit, onSave, onUpdate }) => {
-  const addDeliverable = () => {
-    onUpdate({ deliverables: [...flow.deliverables, ""] });
+const FlowComponent = ({
+  flow,
+  index,
+  peopleOptions,
+  isEditing,
+  onEdit,
+  onSave,
+  onUpdate,
+}) => {
+  const updateDeliverable = (value) => {
+    onUpdate({ deliverables: [value] });
   };
 
-  const updateDeliverable = (index, value) => {
-    const updatedDeliverables = [...flow.deliverables];
-    updatedDeliverables[index] = value;
-    onUpdate({ deliverables: updatedDeliverables });
-  };
-
-  const addPersonInvolved = (personId) => {
-    if (!flow.peopleInvolved.includes(personId)) {
-      onUpdate({
-        peopleInvolved: [...flow.peopleInvolved, personId],
-      });
-    }
-  };
-
-  const removePersonInvolved = (personId) => {
-    onUpdate({
-      peopleInvolved: flow.peopleInvolved.filter((id) => id !== personId),
-    });
+  const setPersonInvolved = (personId) => {
+    onUpdate({ peopleInvolved: personId ? [personId] : [] });
   };
 
   return (
@@ -44,11 +36,10 @@ const FlowComponent = ({ flow, index, peopleOptions, isEditing, onEdit, onSave, 
             <h4>People Involved</h4>
             <div>
               <select
+                value={flow.peopleInvolved[0] || ""}
                 onChange={(e) => {
                   const selectedId = e.target.value;
-                  if (selectedId) {
-                    addPersonInvolved(selectedId);
-                  }
+                  setPersonInvolved(selectedId);
                 }}
               >
                 <option value="">Select a person</option>
@@ -59,37 +50,15 @@ const FlowComponent = ({ flow, index, peopleOptions, isEditing, onEdit, onSave, 
                 ))}
               </select>
             </div>
-            <ul>
-              {flow.peopleInvolved.map((id) => {
-                const person = peopleOptions.find((p) => p._id === id);
-                return (
-                  <li key={id}>
-                    {person
-                      ? `${person.firstName} ${person.lastName} (${person.role})`
-                      : "Unknown"}
-                    <button
-                      style={{ marginLeft: "10px" }}
-                      onClick={() => removePersonInvolved(id)}
-                    >
-                      Remove
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
           </div>
           <div>
-            <h4>Deliverables</h4>
-            {flow.deliverables.map((deliverable, index) => (
-              <input
-                key={index}
-                type="text"
-                placeholder="Deliverable"
-                value={deliverable}
-                onChange={(e) => updateDeliverable(index, e.target.value)}
-              />
-            ))}
-            <button onClick={addDeliverable}>Add Deliverable</button>
+            <h4>Deliverable</h4>
+            <input
+              type="text"
+              placeholder="Deliverable"
+              value={flow.deliverables[0] || ""}
+              onChange={(e) => updateDeliverable(e.target.value)}
+            />
           </div>
           <button onClick={() => onSave(flow, index)}>Save</button>
         </div>
@@ -98,7 +67,7 @@ const FlowComponent = ({ flow, index, peopleOptions, isEditing, onEdit, onSave, 
           <h3>{flow.title || "Untitled"}</h3>
           <p>{flow.description || "No description"}</p>
           <div>
-            <h4>People Involved</h4>
+            <h4>Person Involved</h4>
             <ul>
               {flow.peopleInvolved.map((id) => {
                 const person = peopleOptions.find((p) => p._id === id);
@@ -113,7 +82,7 @@ const FlowComponent = ({ flow, index, peopleOptions, isEditing, onEdit, onSave, 
             </ul>
           </div>
           <div>
-            <h4>Deliverables</h4>
+            <h4>Deliverable</h4>
             <ul>
               {flow.deliverables.map((deliverable, index) => (
                 <li key={index}>{deliverable || "Empty"}</li>
