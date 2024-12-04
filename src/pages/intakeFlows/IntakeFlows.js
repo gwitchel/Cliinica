@@ -1,15 +1,32 @@
 import React, { useState, useEffect } from "react";
-import NewIntakeFlow from "./NewIntakeFlow";
 const { ipcRenderer } = window.require("electron");
 import IntakeFlowCard from "./IntakeFlowCard";
+import BigIntakeFlowCard from "./BigIntakeFlowCard";
+import NewIntakeFlow from "./NewIntakeFlow";
 import "./IntakeFlows.css";
+import {FaPlus} from 'react-icons/fa';
+
 
 const IntakeFlows = () => {
   const [showNewFlow, setShowNewFlow] = useState(false);
   const [jsonData, setJsonData] = useState([]);
   const [error, setError] = useState(null);
+  const [selectedFlow, setSelectedFlow] = useState(null)
+  const [organization, setOrganization] = useState(null)
 
-  // Fetch JSON data from the main process
+  const fetchOrganization = async () => {
+    try {
+      const data = await window.electron.loadCsv('organization');
+      setOrganization(data); // Set the loaded data
+    } catch (err) {
+      console.warn("Error loading JSON data: " + err.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrganization();
+  }, []);
+
   const fetchJsonData = async () => {
     try {
       const data = await ipcRenderer.invoke("load-all-json"); // Request all JSON data
@@ -19,32 +36,23 @@ const IntakeFlows = () => {
     }
   };
 
+  console.log("SHownewFlow", showNewFlow)
   // Load all JSON files when the component mounts
   useEffect(() => {
-    fetchJsonData();
-  }, []);
+    if(!showNewFlow){
+      fetchJsonData();
+    }
+  }, [setShowNewFlow]);
 
   // Add a new flow to the list
   const handleAddNewFlow = () => {
+    console.log('Adding new flow')
     setShowNewFlow(true);
+    setSelectedFlow(null)
   };
 
-  // Save the newly created flow and add it to the list
-  const handleSaveNewFlow = (newFlow) => {
-    setJsonData((prevData) => [...prevData, newFlow]);
-    setShowNewFlow(false);
-  };
-
-  // Handle updates to a specific flow in the list
-  const handleUpdateFlow = (updatedFlow) => {
-    setJsonData((prevData) =>
-      prevData.map((flow) => (flow.id === updatedFlow.id ? updatedFlow : flow))
-    );
-  };
-
-  // Refresh button click to reload the data
-  const handleRefresh = () => {
-    fetchJsonData();
+  const handleFlowSelect = (flow) => {
+    setSelectedFlow((prev) => (prev === flow ? null : flow));
   };
 
   if (error) {
@@ -52,43 +60,47 @@ const IntakeFlows = () => {
   }
 
   return (
-    <div>
-      <div>
-        <h2>All Loaded Flows</h2>
-        {jsonData.length > 0 ? (
-          <div className="flow-grid">
-            {jsonData.map((flow) => (
-              <IntakeFlowCard
-                key={flow.id}
-                flow={flow}
-                onUpdate={handleUpdateFlow} // Pass the update handler to IntakeFlowCard
+      <div style={{display:'flex', flexDirection:'row', width: '100%', flexGrow: 1, justifyContent: 'space-between'}}>
+        <div className="flow-grid">
+          {jsonData.map((flow,index) => (
+            <IntakeFlowCard
+              key={index}
+              flow={flow}
+              isSelected = {selectedFlow == flow}
+              onSelect={() => handleFlowSelect(flow)}
+            />
+          ))}
+            {/* Add New Flow Button */}
+          {!showNewFlow && <button className='mmm' onClick={handleAddNewFlow}><FaPlus /></button>}
+          {/* Add New Flow Button */}
+          {showNewFlow && <button onClick={() => setShowNewFlow(false)} style={{backgroundColor: "#ED7390", color: "white", padding: "10px", border: "none", borderRadius: "4px" }}>Cancel</button>}
+          
+          {/* Refresh Button */}
+          {/* <button onClick={handleRefresh}>Refresh</button> */}
+        </div>
+        {(showNewFlow || selectedFlow) && 
+          <div className="active-flow">
+            {showNewFlow && (
+              <NewIntakeFlow
+                flowData={{ 
+                  id: Date.now(),
+                  title: "", 
+                  description: "", 
+                  flows: []}} // Empty flow structure
+                // onFlowUpdate={(flow) => {setSelectedFlow(flow)}} // No live updates for new flows
+                onSave={(flow)=>{setSelectedFlow(flow), setShowNewFlow(false), fetchJsonData()}} // Save and close
               />
-            ))}
+            )}
+            { selectedFlow && (
+              <BigIntakeFlowCard
+                flow ={selectedFlow}
+                onDelete={(flow) => {window.electron.deleteFlow(flow.data.title); setSelectedFlow(null), fetchJsonData()}}
+                organization = {organization}
+              />
+            )}
           </div>
-        ) : (
-          <p>No flows available.</p>
-        )}
+        }
       </div>
-
-      {/* Add New Flow Button */}
-      <button onClick={handleAddNewFlow}>Add New Flow</button>
-
-      {/* Refresh Button */}
-      <button onClick={handleRefresh}>Refresh</button>
-
-      {/* Conditionally render the NewIntakeFlow component */}
-      {showNewFlow && (
-        <NewIntakeFlow
-          flowData={{ 
-            id: Date.now(),
-            title: "", 
-            description: "", 
-            flows: []}} // Empty flow structure
-          onFlowUpdate={() => {}} // No live updates for new flows
-          onSave={(newFlow) => handleSaveNewFlow(newFlow)} // Save and close
-        />
-      )}
-    </div>
   );
 };
 

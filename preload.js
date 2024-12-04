@@ -18,5 +18,6 @@ window.electron = {
     },
     saveCsvFile: (filePath, data) => ipcRenderer.send('save-csv', filePath, data),
     saveJsonFile: (filePath, data)=> ipcRenderer.send('save-json', filePath, data),
+    deleteFlow: (filePath) => ipcRenderer.send('delete-flow', filePath),
 
 };

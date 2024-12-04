@@ -1,0 +1,44 @@
+{
+  "title": "My Second Flow ",
+  "description": "description",
+  "id": 1733120167265,
+  "flows": [
+    [
+      {
+        "id": 1733120173757,
+        "title": "first step ",
+        "description": "des",
+        "peopleInvolved": [
+          "000001"
+        ],
+        "deliverables": [
+          "Get EMT"
+        ]
+      },
+      {
+        "id": 1733120188295,
+        "title": "second step ",
+        "description": "description for second step",
+        "peopleInvolved": [
+          "000001"
+        ],
+        "deliverables": [
+          "get MRI "
+        ]
+      }
+    ],
+    [
+      {
+        "id": 1733120199159,
+        "title": "Last step ",
+        "description": "Schedule for appointment ",
+        "peopleInvolved": [
+          "000001"
+        ],
+        "deliverables": [
+          "appointment scheduled "
+        ]
+      }
+    ]
+  ]
+}

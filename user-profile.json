@@ -1,6 +1,7 @@
 {
-    "firstName": "Jane",
-    "lastName": "Doe",
-    "role": "Secretary", 
-    "_id": "000001"
+  "firstName": "Jane",
+  "lastName": "Doe",
+  "role": "Doctor",
+  "_id": "000001",
+  "color": "#FF0000"
 }

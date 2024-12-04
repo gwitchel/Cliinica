@@ -1,22 +1,25 @@
 {
-  "name": "local",
+  "name": "Cliinica",
   "version": "1.0.0",
-  "description": "",
+  "description": "Patient intake and referral tracking",
   "main": "main.js",
-  "scripts": {
-    "start": "webpack serve",
-    "electron-start": "electron .",
-    "build": "webpack"
+  "author": "Georgia Witchel",
+  "scripts": { 
+    "start": "webpack serve --mode development",  
+    "electron-start": "electron .",              
+    "build:react": "webpack --mode production",  
+    "build": "npm run build:react && electron-builder", 
+    "build:local": "webpack"   ,
+    "build:win": "electron-builder --win"
+              
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "browserify-fs": "^1.0.0",
     "buffer": "^6.0.3",
     "css-loader": "^7.1.2",
     "csv-parser": "^3.0.0",
-    "electron": "^33.2.0",
     "fast-csv": "^5.0.2",
     "file-saver": "^2.0.5",
     "json2csv": "^6.0.0-alpha.2",
@@ -40,19 +43,91 @@
     "@babel/preset-env": "^7.26.0",
     "@babel/preset-react": "^7.25.9",
     "babel-loader": "^9.2.1",
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8",
     "html-webpack-plugin": "^5.6.3",
+    "terser-webpack-plugin": "^5.3.3",  
     "webpack": "^5.96.1",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.1.0"
   },
   "build": {
-    "appId": "com.example.mycoolapp",
-    "mac": {
-      "icon": "assets/logo.png",
-      "category": "public.app-category.productivity",
-      "artifactName": "${productName}-v${version}.${ext}"
+    "appId": "com.georgiawitchel.cliinica",
+    "productName": "Cliinica",
+    "files": [
+      "dist/**/*",        
+      "node_modules/**/*",
+      "data-preprocessing/**/*", 
+      "preload.js",     
+      "assets/**/*",     
+      "main.js",         
+      "package.json",
+      "patients.csv",
+      "changelog.csv",
+      "organization.csv",
+      "patient-flows.json",
+      "user-profile.json",
+      "flows/**/*",
+      "!OneDrive/**"
+
+    ],
+    "extraResources": [
+      {
+        "from": "patients.csv",
+        "to": "patients.csv"
+      },
+      {
+        "from": "changelog.csv",
+        "to": "changelog.csv"
+      },
+      {
+        "from": "organization.csv",
+        "to": "organization.csv"
+      },
+      {
+        "from": "patient-flows.json",
+        "to": "patient-flows.json"
+      },
+      {
+        "from": "user-profile.json",
+        "to": "user-profile.json"
+      },
+      {
+        "from": "flows",
+        "to": "flows"
+      }
+    ],
+    "extraMetadata": {
+      "env": {
+        "ONEDRIVE_PATH": "${env.ONEDRIVE_PATH}"
+      }
     },
-    "productName": "Cliinica"
+    "directories": {
+      "output": "dist"    
+    },
+    "mac": {
+      "icon": "assets/logo.icns", 
+      "identity": "Your Name (RQ535HNNVW)",
+      "category": "public.app-category.productivity",
+      "entitlements": "entitlements.mac.plist",
+      "entitlementsInherit": "entitlements.mac.inherit.plist",
+      "hardenedRuntime": true
+    },
+    "win": {
+      "target": ["nsis", "portable"],
+      "icon": "assets/logo.ico"
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "icon": "build/icons"
+    }
+  },
+  "nsis": {
+    "oneClick": true,
+    "perMachine": true,
+    "allowElevation": true,
+    "allowToChangeInstallationDirectory": false,
+    "installerIcon": "assets/icon.ico",
+    "uninstallerIcon": "assets/uninstall-icon.ico"
   }
-  
 }

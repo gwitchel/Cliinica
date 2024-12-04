@@ -1,0 +1,3 @@
+extraMetadata:
+  env:
+    ONEDRIVE_PATH: "${env.ONEDRIVE_PATH}"

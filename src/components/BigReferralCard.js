@@ -6,7 +6,8 @@ const { ipcRenderer } = window.require("electron");
 import { FaRegWindowClose, FaEdit, FaSave, FaTrash} from 'react-icons/fa'; // FontAwesome icons
 import { deleteCSVRow } from '../../data-preprocessing/updateCSVRow';
 
-const BigReferralCard = ({ referral, isExpanded, updateProcessedReferralsCsv, onClose, refresh}) => {
+
+const BigReferralCard = ({ referral, isExpanded, updateProcessedReferralsCsv, onClose, refresh, handleDeletePatient}) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editedReferral, setEditedReferral] = useState({
         ...referral,
@@ -16,7 +17,8 @@ const BigReferralCard = ({ referral, isExpanded, updateProcessedReferralsCsv, on
     const [selectedFlow, setSelectedFlow] = useState(null); // Flow selected to be added
     const [activeTab, setActiveTab] = useState('current'); // State for managing tabs
     const [allPatientFlows, setAllPatientFlows] = useState({})
-    
+    const [showConfirmation, setShowConfirmation] = useState(false); // Confirmation modal state
+
     const getFlows = async () => {
         try {
             const data = await ipcRenderer.invoke("load-all-json"); // Request all JSON data
@@ -49,6 +51,11 @@ const BigReferralCard = ({ referral, isExpanded, updateProcessedReferralsCsv, on
         getFlows();
     }, [isEditing]);
 
+    const confirmDelete = () => {
+        handleDeletePatient(referral.MRN); // Call the delete handler
+        setShowConfirmation(false); // Hide the modal
+    };
+    
     const handleAddFlow = () => {
         // this needs updating... 
         if (!selectedFlow) return;
@@ -68,13 +75,12 @@ const BigReferralCard = ({ referral, isExpanded, updateProcessedReferralsCsv, on
     };
 
     const handleSaveFlow = (flowToSave) => {
+        console.log('Saving flow:', flowToSave);
         let newFlows = {...allPatientFlows}
         let currrentPatientFlows = newFlows[referral.MRN]
-        console.log("Flow to save", flowToSave)
-        console.log("Current Patient Flows", currrentPatientFlows)
         let updatedCurrentPatientFlows = currrentPatientFlows.map(flow => flow.data.id === flowToSave.id ? {...flow, data: flowToSave} : flow);
         newFlows[referral.MRN] = updatedCurrentPatientFlows
-        // const updatedActiveFlows = activeFlows.map(flow => flow.data.id === flowToSave.id ? flowToSave : flow);
+
         window.electron.saveJsonFile('patient-flows.json', newFlows);
         setActiveFlows(newFlows[referral.MRN]);
         getFlows(); // update the flows so they automatically update
@@ -90,15 +96,7 @@ const BigReferralCard = ({ referral, isExpanded, updateProcessedReferralsCsv, on
         getFlows(); // update the flows so they automatically
     };
 
-    const handleDeletePatient = () => {
-        console.log('Deleting patient:', referral);
-        const updatedReferrals = referrals.filter(referral => referral.MRN !== referral.MRN);
-        setReferrals(updatedReferrals);
 
-        setSelectedReferral(null);
-        refresh();
-    };
-    
     const handleSave = () => {
         setIsEditing(false);
     
@@ -115,95 +113,160 @@ const BigReferralCard = ({ referral, isExpanded, updateProcessedReferralsCsv, on
     return (
         <div className="big-referral-card">
             <div className="tabs">
-                <div style={{display:'flex', flexDirection:'row'}}>
-                <button
-                    className={activeTab === 'current' ? 'active' : ''}
-                    onClick={() => setActiveTab('current')}
-                >
-                    Patient Info
-                </button>
-                <button
-                    className={activeTab === 'other' ? 'active' : ''}
-                    onClick={() => setActiveTab('other')}
-                >
-                    Flows
-                </button>
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                    <button
+                        className={`tab-button ${activeTab === 'current' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('current')}
+                    >
+                        Patient Info
+                    </button>
+                    <button
+                        className={`tab-button ${activeTab === 'other' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('other')}
+                    >
+                        Flows
+                    </button>
                 </div>
-                <div style={{display:'flex', flexDirection:'row'}}>
-                    {activeTab === 'current' &&
-                    <button onClick={handleEditToggle}>{!isEditing ? <FaEdit style={{color:"#000", width:'20px', height:'20px'}} /> : <FaSave style={{color:"#000", width:'20px', height:'20px'}} />}</button>
-                    } 
-                    {/* Right now you can only delete patients by editing the CSV file its referring to */}
-                    {/* {isEditing && <button onClick={()=>{deleteCSVRow('patients', referral.MRN), onClose() }}><FaTrash style={{color:"#000", width:'20px', height:'20px'}}/></button>} */}
-                    <button onClick={onClose}><FaRegWindowClose style={{color:"#000", width:'20px', height:'20px'}}/></button>
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                    {activeTab === 'current' && (
+                        <button onClick={handleEditToggle}>
+                            {!isEditing ? (
+                                <FaEdit style={{ color: "#000", width: '20px', height: '20px' }} />
+                            ) : (
+                                <FaSave style={{ color: "#000", width: '20px', height: '20px' }} />
+                            )}
+                        </button>
+                    )}
+                    <button onClick={onClose}>
+                        <FaRegWindowClose style={{ color: "#000", width: '20px', height: '20px' }} />
+                    </button>
                 </div>
             </div>
 
             {activeTab === 'current' && (
-                <div className="tab-content">
-                    <div className="card-header">
+                <div className="current-tab">
+                    <div className="referral-details">
                         {Object.keys(editedReferral).map((key) => (
-                            <div key={key}>
-                                <strong>{key}:</strong>{' '}
+                            <div className="referral-detail-row" key={key}>
+                                <strong className="detail-key">{key}:</strong>
                                 {isEditing ? (
                                     <input
+                                        className="detail-input"
                                         value={editedReferral[key] || ''}
                                         onChange={(e) => handleChange(key, e.target.value)}
                                     />
                                 ) : (
-                                    editedReferral[key]
+                                    <span className="detail-value">{editedReferral[key]}</span>
                                 )}
                             </div>
                         ))}
-                        {/* {referral['user'] && (
-                            <div>
-                                <strong>Changed By:</strong> {referral['user']['firstName']} {referral['user']['lastName']}
-                            </div>
-                        )} */}
                     </div>
+                    {isEditing && (
+                        <div className="delete-button-container">
+                            <button
+                                onClick={() => setShowConfirmation(true)} // Open the modal
+                                style={{
+                                    marginTop: '20px',
+                                    backgroundColor: '#ED7390',
+                                    color: 'white',
+                                    border: 'none',
+                                    padding: '10px 20px',
+                                    borderRadius: '5px',
+                                    cursor: 'pointer',
+                                }}
+                            >
+                                Delete Patient
+                            </button>
+                        </div>
+                    )}
+    
                 </div>
             )}
 
-
             {activeTab === 'other' && (
                 <div className="flows-tab">
-                    <div >
-                        {activeFlows.map((flow, index) => (
-                            <>
-                            {isEditing && <button  key={index} onClick={() => handleRemoveFlow(flow)}>Remove</button>}
-                            <LittleFlowCard 
-                                key={index} 
-                                flow={flow.data} 
-                                onRemove={handleRemoveFlow} 
-                                onSave={handleSaveFlow} 
-                                onDelete={handleRemoveFlow}
-                            />
-                            </>
-                        ))}
+                    <div className="active-flows">
+                        {activeFlows.length > 0 ? (
+                            activeFlows.map((flow, index) => (
+                                <div key={index} className="flow-card">
+                                    <LittleFlowCard
+                                        flow={flow.data}
+                                        onRemove={handleRemoveFlow}
+                                        onSave={handleSaveFlow}
+                                        onDelete={handleRemoveFlow}
+                                    />
+                                </div>
+                            ))
+                        ) : (
+                            <p>No active flows for this patient.</p>
+                        )}
                     </div>
 
-                    
-                    {allFlows.filter(flow => !activeFlows.map(flow => flow.data.id).includes(flow.data.id)).length != 0 && <>
-                        <h3>Add a Flow</h3>
-                        <select
-                            value={selectedFlow ? selectedFlow.data.id : ''}
-                            onChange={(e) => {
-                                const flow = allFlows.find(flow => flow.data.id == e.target.value);
-                                setSelectedFlow(flow || null);
-                            }}
-                        >
-                            <option value="">Select a flow</option>
-                            {allFlows.filter(flow => !activeFlows.map(flow => flow.data.id).includes(flow.data.id)).map((flow, index) => (
-                                <option key={index} value={flow.data.id}>
-                                    {flow.data.title || 'Untitled'}
-                                </option>
-                            ))}
-                        </select>
-                        <button onClick={handleAddFlow} disabled={!selectedFlow}>
-                            Add Flow
-                        </button>
-                    </>}
-                
+                    <div className="add-flow-section">
+                        {allFlows.filter(flow => !activeFlows.some(active => active.data.id === flow.data.id)).length > 0 && (
+                            <>
+                                <h3>Add a New Flow</h3>
+                                <div className="add-flow-controls">
+                                    <select
+                                        value={selectedFlow ? selectedFlow.data.id : ''}
+                                        onChange={(e) => {
+                                            const flow = allFlows.find(flow => flow.data.id == e.target.value);
+                                            setSelectedFlow(flow || null);
+                                        }}
+                                        className="flow-select"
+                                    >
+                                        <option value="">Select a flow</option>
+                                        {allFlows.filter(flow => !activeFlows.some(active => active.data.id === flow.data.id)).map((flow, index) => (
+                                            <option key={index} value={flow.data.id}>
+                                                {flow.data.title || 'Untitled'}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <button
+                                        className="add-flow-btn"
+                                        onClick={handleAddFlow}
+                                        disabled={!selectedFlow}
+                                    >
+                                        Add Flow
+                                    </button>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            )}
+            {showConfirmation && (
+                <div className="confirmation-modal">
+                    <div className="modal-content">
+                        <h2>Are you sure?</h2>
+                        <p>Deleting this patient is irreversible.</p>
+                        <div className="modal-actions">
+                            <button
+                                onClick={() => setShowConfirmation(false)} // Hide modal if "Cancel" is clicked
+                                style={{
+                                    marginRight: '10px',
+                                    padding: '10px 20px',
+                                    borderRadius: '5px',
+                                    cursor: 'pointer',
+                                }}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmDelete} // Proceed with deletion if "Confirm" is clicked
+                                style={{
+                                    backgroundColor: '#ED7390',
+                                    color: 'white',
+                                    border: 'none',
+                                    padding: '10px 20px',
+                                    borderRadius: '5px',
+                                    cursor: 'pointer',
+                                }}
+                            >
+                                Confirm
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

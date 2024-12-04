@@ -10,11 +10,9 @@ const ReferralCard = ({ referral, onClick }) => {
             onClick={onClick} // Select this referral
         >
             <div className="card-header">
-                <FaUser style={{width: 35, height: 35, fill: '#323232'}}/>
                 <div><strong> {referral.Name}</strong></div>
                 <div>{referral.MRN}</div>
-                {/* {referral['user'] && <div><strong>Changed By:</strong> {referral['user']['firstName']} {referral['user']['lastName']}</div>} */}
-                {/* {referral['Date'] && <div><strong>Date:</strong> {referral['Date']}</div>} */}
+                {referral.next_steps && <div>{referral.next_steps}</div>}
             </div>
         </div>
     );
