@@ -4,6 +4,7 @@ import Overview from './pages/overview/Overview';
 import Organization from './pages/organization/Organization';
 import IntakeFlows from './pages/intakeFlows/IntakeFlows';
 import { FaUser } from 'react-icons/fa';
+import Login from './pages/login/Login';
 
 const App = () => {
     const [activeTab, setActiveTab] = useState('overview');
@@ -57,22 +58,8 @@ const App = () => {
 
     if (!userProfile) {
         return (
-            <div className="user-selection-overlay">
-                <div className="user-selection-container">
-                    <h2>Select Your Profile</h2>
-                    <p> If you don't see the correct profiles select a temporary one, edit the organization once you've logged in and then quit and select the user you like</p>
-                    <ul>
-                        {organization.map(user => (
-                            <li key={user._id}>
-                                <button onClick={() => handleUserSelection(user._id)}>
-                                    {`${user.firstName} ${user.lastName} (${user.role})`}
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            </div>
-        );
+            <Login setUserProfile={(profile) => setUserProfile(profile)}/>
+        )
     }
 
     return (
@@ -97,6 +84,7 @@ const App = () => {
                     >
                         Flows
                     </button>
+                    
                 </div>
                 <div
                     className="slider"
@@ -106,9 +94,9 @@ const App = () => {
                 ></div>
             </div>
 
-            {activeTab === 'overview' && <Overview />}
-            {activeTab === 'organization' && <Organization />}
-            {activeTab === 'intakeFlows' && <IntakeFlows />}
+            {activeTab === 'overview' && <Overview userProfile={userProfile}/>}
+            {activeTab === 'organization' && <Organization userProfile={userProfile}/>}
+            {activeTab === 'intakeFlows' && <IntakeFlows userProfile={userProfile}/>}
 
             <div className="user-icon-container" onClick={handleUserIconClick}>
                 <div

@@ -11,14 +11,11 @@ import { FaArrowRotateLeft } from "react-icons/fa6";
 const Bulletin = () => {
     const [referrals, setReferrals] = useState([]);
     const [recentlyChangedReferrals, setRecentlyChangedReferrals] = useState([]);
-    const [userProfile, setUserProfile] = useState(null);
 
 
     const loadData = async () => {
         try {
             const processedData = await window.electron.loadCsv('patients');
-            const userProfile = await window.electron.loadUserProfile();
-            setUserProfile(userProfile);
             setReferrals(processedData);
             setFilteredReferrals(processedData);
         } catch (error) {

@@ -4,10 +4,9 @@ import './BigReferralCard.css';
 import LittleFlowCard from './flowCards/LittleFlowCard';'../components/flowCards/LittleFlowCard';
 const { ipcRenderer } = window.require("electron");
 import { FaRegWindowClose, FaEdit, FaSave, FaTrash} from 'react-icons/fa'; // FontAwesome icons
-import { deleteCSVRow } from '../../data-preprocessing/updateCSVRow';
+const { updateCSVRow } = require('../../data-preprocessing/updateCSVRow');
 
-
-const BigReferralCard = ({ referral, isExpanded, updateProcessedReferralsCsv, onClose, refresh, handleDeletePatient}) => {
+const BigReferralCard = ({ referral, setChangelog,changelog, onClose, refresh, handleDeletePatient, userProfile}) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editedReferral, setEditedReferral] = useState({
         ...referral,
@@ -18,7 +17,7 @@ const BigReferralCard = ({ referral, isExpanded, updateProcessedReferralsCsv, on
     const [activeTab, setActiveTab] = useState('current'); // State for managing tabs
     const [allPatientFlows, setAllPatientFlows] = useState({})
     const [showConfirmation, setShowConfirmation] = useState(false); // Confirmation modal state
-
+    
     const getFlows = async () => {
         try {
             const data = await ipcRenderer.invoke("load-all-json"); // Request all JSON data
@@ -70,6 +69,21 @@ const BigReferralCard = ({ referral, isExpanded, updateProcessedReferralsCsv, on
             console.log("New FLow", newFlow)
             window.electron.saveJsonFile('patient-flows.json', newFlow);
         }
+        
+        // update the changelog
+        const date = new Date().toISOString();
+        const changes = {
+                Date: date,
+                editor: userProfile._id,
+                MRN: referral['MRN'],
+                field: 'flows',
+                old_value: null,
+                new_value: selectedFlow,
+                action: 'Flow Added'
+            }
+        setChangelog([...changelog, changes]);
+        window.electron.saveCsvFile('changelog.csv', [...changelog, changes]);
+        
         refresh(); 
         getFlows();
     };
@@ -82,6 +96,23 @@ const BigReferralCard = ({ referral, isExpanded, updateProcessedReferralsCsv, on
         newFlows[referral.MRN] = updatedCurrentPatientFlows
 
         window.electron.saveJsonFile('patient-flows.json', newFlows);
+
+        // update the changelog 
+        const date = new Date().toISOString();
+        const changes = [
+            {
+                Date: date,
+                editor: userProfile._id,
+                MRN: referral['MRN'],
+                field: 'flows',
+                old_value: flowToSave,
+                new_value: flowToSave,
+                action: 'Flow Updated'
+            }
+        ]
+        setChangelog([...changelog, ...changes]);
+        window.electron.saveCsvFile('changelog.csv', [...changelog, ...changes]);
+
         setActiveFlows(newFlows[referral.MRN]);
         getFlows(); // update the flows so they automatically update
     }
@@ -92,22 +123,57 @@ const BigReferralCard = ({ referral, isExpanded, updateProcessedReferralsCsv, on
         let updatedCurrentPatientFlows = currrentPatientFlows.filter(flow => flow.data.id !== flowToRemove.id);
         newFlows[referral.MRN] = updatedCurrentPatientFlows
         window.electron.saveJsonFile('patient-flows.json', newFlows);
+
+        // update the changelog
+        const date = new Date().toISOString();
+        const changes = [
+            {
+                Date: date,
+                editor: userProfile._id,
+                MRN: referral['MRN'],
+                field: 'flows',
+                old_value: flowToRemove,
+                new_value: null,
+                action: 'Flow Removed'
+            }
+        ]
+        setChangelog([...changelog, ...changes]);
+        window.electron.saveCsvFile('changelog.csv', [...changelog, ...changes]);
+
         setActiveFlows(newFlows[referral.MRN]);
         getFlows(); // update the flows so they automatically
-    };
 
+
+    };
 
     const handleSave = () => {
         setIsEditing(false);
     
         const updatedColumns = { ...editedReferral }; // Dynamically capture all keys and values from editedReferral
-    
-        console.log("Updated columns:", updatedColumns);
-        updateProcessedReferralsCsv('patients', referral.MRN, updatedColumns);
-        // updateProcessedReferralsCsv('Deidentified - referrals', referral.MRN, updatedColumns);
+        updateCSVRow('patients', referral.MRN, updatedColumns);
+
+
+        const date = new Date().toISOString();
+        console.log("UPPPPP Profile", userProfile._id)
+        const changes = [
+            ...Object.entries(editedReferral).map(([key, value]) => {
+                if (editedReferral[key] !== referral[key]) return {
+                    Date: date,
+                    editor: userProfile._id,
+                    MRN: referral['MRN'],
+                    field: key,
+                    old_value: referral[key],
+                    new_value: value,
+                    action: 'Patient Updated'
+                };
+                return null;
+            }).filter(change => change !== null)
+        ]
+        setChangelog([...changelog, ...changes]);
+        window.electron.saveCsvFile('changelog.csv', [...changelog, ...changes]);
     
         console.log("Referral updated successfully");
-        refresh(); // Refresh the referral list
+        refresh();
     };
 
     return (
@@ -271,11 +337,6 @@ const BigReferralCard = ({ referral, isExpanded, updateProcessedReferralsCsv, on
             )}
         </div>
     );
-};
-
-BigReferralCard.propTypes = {
-    referral: PropTypes.object.isRequired,
-    updateProcessedReferralsCsv: PropTypes.func.isRequired,
 };
 
 export default BigReferralCard;

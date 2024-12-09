@@ -60,6 +60,7 @@ let sessionId = null; // Unique session ID for tracking user session
 
 async function getBasePath() {
     const configPath = path.join(app.getPath('userData'), 'config.json');
+    console.log("Config path:", configPath);
     let oneDrivePath = null;
 
     // Check if the config file exists
@@ -104,10 +105,10 @@ function createWindow() {
         app.dock.setIcon(path.join(__dirname, 'assets/logo.png'));
         // app.dock.setIcon(path.join(__dirname, 'assets', 'logo.icns')); // Set Dock icon for macOS
     }
-    if (process.platform === 'win32') {
-        app.dock.setIcon(path.join(__dirname, 'assets/logo.ico'));
-        // app.dock.setIcon(path.join(__dirname, 'assets', 'logo.icns')); // Set Dock icon for macOS
-    }
+    // if (process.platform === 'win32') {
+    //     app.dock.setIcon(path.join(__dirname, 'assets/logo.ico'));
+    //     // app.dock.setIcon(path.join(__dirname, 'assets', 'logo.icns')); // Set Dock icon for macOS
+    // }
     
     app.setName('Cliinica');
 
@@ -184,24 +185,24 @@ ipcMain.handle('load-all-json', async (event) => {
 });
 
 
-async function loadUserProfile() {
-    try {
+// async function loadUserProfile() {
+//     try {
 
-        // const filePath = path.join(__dirname, 'user-profile.json');
-        const basePath = await getBasePath();
-        const filePath = path.join(basePath, 'user-profile.json');
+//         // const filePath = path.join(__dirname, 'user-profile.json');
+//         const basePath = await getBasePath();
+//         const filePath = path.join(basePath, 'user-profile.json');
 
-        const fileContent = await promises.readFile(filePath, 'utf8');  // Correct usage of fs.promises.readFile
-                return  JSON.parse(fileContent) 
-    } catch (error) {
-        console.error("Error loading JSON files:", error);
-        throw error; // Rethrow error to handle it in calling code
-    }
-}
+//         const fileContent = await promises.readFile(filePath, 'utf8');  // Correct usage of fs.promises.readFile
+//                 return  JSON.parse(fileContent) 
+//     } catch (error) {
+//         console.error("Error loading JSON files:", error);
+//         throw error; // Rethrow error to handle it in calling code
+//     }
+// }
 
-ipcMain.handle('load-user-profile', async (event) => {
-    return await loadUserProfile(); // Fetch all JSON files
-});
+// ipcMain.handle('load-user-profile', async (event) => {
+//     return await loadUserProfile(); // Fetch all JSON files
+// });
 // Read t
 
 ipcMain.handle('load-active-patient-flows', async (event) => {
@@ -485,12 +486,27 @@ app.whenReady()
         console.error('Error during app initialization:', err);
     });
 
-app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') app.quit();
-    const datetimeOff = new Date().toISOString();  // Capture datetime when the app closes
-    if (userProfile) {
-        // logUsageToCsv(userProfile, datetimeOn, datetimeOff, sessionId); // Update the usage record with time off
+    
+app.on('window-all-closed', async () => {
+
+    // if (process.platform !== 'darwin') app.quit();
+        // make backups of the patient-flows.json file
+    const basePath = await getBasePath(); // Ensure basePath is resolved
+    const backupPath = path.join(basePath, 'backups');
+    const backupFileName = `patient-flows_backup.json`;
+    const backupFileNamePatients = `patients_backup.csv`;
+
+    const backupFilePath = path.join(backupPath, backupFileName);
+    const backupFilePathPatients = path.join(backupPath, backupFileNamePatients);
+
+    if (!fs.existsSync(backupPath)) {
+        fs.mkdirSync(backupPath);
     }
+    fs.copyFileSync(path.join(basePath, 'patient-flows.json'), backupFilePath);
+    fs.copyFileSync(path.join(basePath, 'patients.csv'), backupFilePathPatients);
+    console.log(`Backup of patients.csv saved to: ${backupFilePathPatients}`);
+    console.log(`Backup of patient-flows.json saved to: ${backupFilePath}`);
+    app.quit();
 });
 
 app.on('activate', () => {

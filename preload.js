@@ -12,10 +12,7 @@ window.electron = {
             callback(event, updatedFileName);
         });
     },
-    loadUserProfile: () => {
-        console.log('Loading user profile...');
-        return ipcRenderer.invoke('load-user-profile');  // Call to load the user profile
-    },
+
     saveCsvFile: (filePath, data) => ipcRenderer.send('save-csv', filePath, data),
     saveJsonFile: (filePath, data)=> ipcRenderer.send('save-json', filePath, data),
     deleteFlow: (filePath) => ipcRenderer.send('delete-flow', filePath),

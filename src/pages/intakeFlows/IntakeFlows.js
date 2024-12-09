@@ -7,7 +7,7 @@ import "./IntakeFlows.css";
 import {FaPlus} from 'react-icons/fa';
 
 
-const IntakeFlows = () => {
+const IntakeFlows = ({userProfile}) => {
   const [showNewFlow, setShowNewFlow] = useState(false);
   const [jsonData, setJsonData] = useState([]);
   const [error, setError] = useState(null);
@@ -23,6 +23,7 @@ const IntakeFlows = () => {
     }
   };
 
+  console.log("SHownewFlow", showNewFlow)
   useEffect(() => {
     fetchOrganization();
   }, []);
@@ -71,7 +72,8 @@ const IntakeFlows = () => {
             />
           ))}
             {/* Add New Flow Button */}
-          {!showNewFlow && <button className='mmm' onClick={handleAddNewFlow}><FaPlus /></button>}
+        
+          {(!showNewFlow && userProfile.isAdmin== 'true') && <button className='mmm' onClick={handleAddNewFlow}><FaPlus /></button>}
           {/* Add New Flow Button */}
           {showNewFlow && <button onClick={() => setShowNewFlow(false)} style={{backgroundColor: "#ED7390", color: "white", padding: "10px", border: "none", borderRadius: "4px" }}>Cancel</button>}
           
@@ -94,7 +96,13 @@ const IntakeFlows = () => {
             { selectedFlow && (
               <BigIntakeFlowCard
                 flow ={selectedFlow}
-                onDelete={(flow) => {window.electron.deleteFlow(flow.data.title); setSelectedFlow(null), fetchJsonData()}}
+                onDelete={(flow) => {
+                  if(organization && userProfile && userProfile.isAdmin == 'true'){
+                    window.electron.deleteFlow(flow.data.title); setSelectedFlow(null), fetchJsonData()
+                  } else {
+                    alert('You do not have permission to delete this flow')
+                  }
+                }}
                 organization = {organization}
               />
             )}

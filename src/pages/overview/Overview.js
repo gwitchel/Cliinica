@@ -12,7 +12,7 @@ import Papa from 'papaparse';
 const fs = require('fs');
 const path = require('path');
 
-const Overview = () => {
+const Overview = ({userProfile}) => {
     const [referrals, setReferrals] = useState([]);
     const [filteredReferrals, setFilteredReferrals] = useState([]);
     
@@ -25,12 +25,27 @@ const Overview = () => {
 
     const [isAttentionSectionExpanded, setIsAttentionSectionExpanded] = useState(true); // Toggle for attention section
     const [showAllPatient, setShowAllPatients] = useState(true); // Toggle for all patients section
+    const [changelog, setChangelog] = useState([]);
+
+    const loadChangelog = async () => {
+        try {
+            console.log('Loading changelog...');
+            const processedData = await window.electron.loadCsv('changelog');
+            setChangelog(processedData);
+        } catch (error) {
+            console.warn('No Changelog Data', error);
+        }
+    };
+
+    useEffect(() => {
+        loadChangelog();
+    }, []);
 
     const loadData = async () => {
         try {
             console.log('Loading referrals...');
             const processedData = await window.electron.loadCsv('patients');
-            const nextSteps = await GetMyToDo();
+            const nextSteps = await GetMyToDo(userProfile);
             setMyNextSteps(nextSteps);
             setReferrals(processedData);
             setFilteredReferrals(processedData);
@@ -51,7 +66,7 @@ const Overview = () => {
     }, [showOnboarding]);
 
 
-    const handleAddNewPatient = () => {
+    const handleAddNewPatient = () => {        
         if (referrals.length === 0) return alert('Please upload a CSV file first.');
     
         console.log('Adding new patient...');
@@ -70,6 +85,19 @@ const Overview = () => {
     
         // Select and expand the new patient for editing
         setSelectedReferral(newPatient);
+
+        // update the changelog to reflect the addition of a new patient
+        const change = {
+            Date: new Date().toISOString(),
+            editor: userProfile._id,
+            MRN: newPatient.MRN,
+            field: 'New Patient',
+            old_value: '',
+            new_value: '',
+            action: 'Patient Added'
+        }
+        setChangelog([...changelog, change]);
+        window.electron.saveCsvFile('changelog.csv', [...changelog, change]);
     };
 
     const handleSearch = (event) => {
@@ -99,12 +127,32 @@ const Overview = () => {
     };
 
     const handleDeletePatient = (mrn) => {
+
+        if (userProfile.isAdmin != "true") {
+            return alert('You do not have permission to delete patients.');
+        }
+
         const updatedReferrals = referrals.filter(referral => referral['MRN'] !== mrn);
         setReferrals(updatedReferrals);
         setFilteredReferrals(updatedReferrals);
         setSelectedReferral(null);
         window.electron.saveCsvFile('patients.csv', updatedReferrals);
+
+        // update the changelog to reflect the deletion of a patient
+         // update the changelog to reflect the addition of a new patient
+         const change = {
+            Date: new Date().toISOString(),
+            editor: userProfile._id,
+            MRN: mrn,
+            field: 'Delete Patient',
+            old_value: '',
+            new_value: '',
+            action: 'Patient Deleted'
+        }
+        setChangelog([...changelog, change]);
+        window.electron.saveCsvFile('changelog.csv', [...changelog, change]);
         loadData();
+
     }
 
     const handleFileUpload = async (event) => {
@@ -162,6 +210,7 @@ const Overview = () => {
         }
     };
 
+    // TODO: set this so you can reset the directory for the patient data
     if (showOnboarding) {
         return ( 
             <div className="app-container">
@@ -179,13 +228,10 @@ const Overview = () => {
                         onChange={handleFileUpload}
                     />
                 </label>
-                {/* <button onClick={() => {}} className="refresh-btn">
-                    <FaCog /> Define Custom Headers
-                </button> */}
             </div>
         )
-
     }
+
     return (
         <div className="app-container">
             <div className='search-controls'>
@@ -269,12 +315,12 @@ const Overview = () => {
                         <BigReferralCard
                             refresh={loadData}
                             referral={selectedReferral}
-                            isExpanded={true}
-                            updateProcessedReferralsCsv={updateCSVRow}
+                            setChangelog={setChangelog}
+                            changelog={changelog}
                             onClose={() => {setSelectedReferral(null), loadData()}}
                             handleDeletePatient={(mrn) => handleDeletePatient(mrn)}
+                            userProfile={userProfile}
                         />
-                        {/* <button onClick={() => setSelectedReferral(null)} className="close-popup-btn"><FaRegWindowClose style={{color:"#000", width:'20px', height:'20px'}}/></button> */}
                     </div>
                 </div>
             )}

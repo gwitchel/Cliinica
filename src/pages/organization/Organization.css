@@ -69,3 +69,14 @@
 .modal-actions button {
     margin: 10px;
 }
+
+.add-member-form-btn {
+    background-color: #2E6A9F;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 10px;
+}

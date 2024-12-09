@@ -1,10 +1,9 @@
 const { ipcRenderer } = window.require("electron");
 
-const GetMyToDo = async () => {
+const GetMyToDo = async (user) => {
     const patientData = await ipcRenderer.invoke("load-active-patient-flows"); // Request all JSON data
     const patients = await window.electron.loadCsv('patients');
 
-    const user = await ipcRenderer.invoke("load-user-profile");
     const personInvolvedId = user._id;
     console.log("personInvolvedId", personInvolvedId);
 

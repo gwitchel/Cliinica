@@ -5,7 +5,6 @@ const { format } = require('fast-csv');
 
 async function updateCSVRow( fileName, MRN, updatedColumns) {
     // Load the processed-referrals.csv using Electron's loadCsv API
-    const userProfile = await window.electron.loadUserProfile();
     
     window.electron.loadCsv(fileName).then((data) => {
         // Clean the headers by trimming whitespace and ensuring they're consistent
@@ -30,15 +29,11 @@ async function updateCSVRow( fileName, MRN, updatedColumns) {
 
                         if (Array.isArray(row)) {
                             if (row[columnIndex] !== newValue) {
-                                // Update the changelog if the file is 
-                                if (fileName === 'patients') updateChangelog(new Date().toISOString(), MRN, column, newValue, row[columnIndex], userProfile._id);
                                 row[columnIndex] = newValue; // Update array row by index
 
                             }
                         } else {
                             if (row[column] !== newValue) {
-                                // Update the changelog if the file is 
-                                if (fileName === 'patients') updateChangelog(new Date().toISOString(), MRN, column, newValue, row[column], userProfile._id);
                                 row[column] = newValue; // Update object row by column name
                             }
                         }
@@ -104,26 +99,6 @@ async function deleteCSVRow( fileName, MRN) {
         console.error('Error loading CSV file:', err);
     });
 
-}
-
-
-async function updateChangelog( date, MRN, field, newValue, oldValue, changed_by) {
-    // Load the processed-referrals.csv using Electron's loadCsv API
-    const changeLog = await window.electron.loadCsv('changelog');
-
-    const change = {
-        'Date': date,
-        'MRN': MRN,
-        'Field': field,
-        'Old Value': oldValue,
-        'New Value': newValue,
-        'Changed By': changed_by,
-    };
-
-    changeLog.push(change);
-
-    window.electron.saveCsvFile('changelog.csv', changeLog);
-    console.log('Changelog updated successfully');
 }
 
 module.exports = { updateCSVRow, deleteCSVRow };
