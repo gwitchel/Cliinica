@@ -4,14 +4,13 @@
   "description": "Patient intake and referral tracking",
   "main": "main.js",
   "author": "Georgia Witchel",
-  "scripts": { 
-    "start": "webpack serve --mode development",  
-    "electron-start": "electron .",              
-    "build:react": "webpack --mode production",  
-    "build": "npm run build:react && electron-builder", 
-    "build:local": "webpack"   ,
+  "scripts": {
+    "start": "webpack serve --mode development",
+    "electron-start": "electron .",
+    "build:react": "webpack --mode production",
+    "build": "npm run build:react && electron-builder",
+    "build:local": "webpack",
     "build:win": "electron-builder --win"
-              
   },
   "keywords": [],
   "license": "MIT",
@@ -43,10 +42,11 @@
     "@babel/preset-env": "^7.26.0",
     "@babel/preset-react": "^7.25.9",
     "babel-loader": "^9.2.1",
-    "electron": "^33.2.0",
+    "electron": "^26.0.0",
     "electron-builder": "^25.1.8",
+    "electron-notarize": "^1.2.2",
     "html-webpack-plugin": "^5.6.3",
-    "terser-webpack-plugin": "^5.3.3",  
+    "terser-webpack-plugin": "^5.3.3",
     "webpack": "^5.96.1",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.1.0"
@@ -55,12 +55,12 @@
     "appId": "com.georgiawitchel.cliinica",
     "productName": "Cliinica",
     "files": [
-      "dist/**/*",        
+      "dist/**/*",
       "node_modules/**/*",
-      "data-preprocessing/**/*", 
-      "preload.js",     
-      "assets/**/*",     
-      "main.js",         
+      "data-preprocessing/**/*",
+      "preload.js",
+      "assets/**/*",
+      "main.js",
       "package.json",
       "patients.csv",
       "changelog.csv",
@@ -69,7 +69,6 @@
       "user-profile.json",
       "flows/**/*",
       "!OneDrive/**"
-
     ],
     "extraResources": [
       {
@@ -103,24 +102,28 @@
       }
     },
     "directories": {
-      "output": "dist"    
+      "output": "dist"
     },
     "mac": {
-      "icon": "assets/logo.icns", 
-      "identity": "Your Name (RQ535HNNVW)",
-      "category": "public.app-category.productivity",
-      "entitlements": "entitlements.mac.plist",
-      "entitlementsInherit": "entitlements.mac.inherit.plist",
+      "icon": "assets/logo.icns",
+      "identity": " georgia witchel (RQ535HNNVW)",
       "hardenedRuntime": true
     },
     "win": {
-      "target": ["nsis", "portable"],
+      "target": [
+        "nsis",
+        "portable"
+      ],
       "icon": "assets/logo.ico"
     },
     "linux": {
-      "target": ["AppImage", "deb"],
+      "target": [
+        "AppImage",
+        "deb"
+      ],
       "icon": "build/icons"
-    }
+    },
+    "afterSign": "afterSign.js"
   },
   "nsis": {
     "oneClick": true,
