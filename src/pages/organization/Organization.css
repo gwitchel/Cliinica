@@ -1,82 +1,129 @@
+/* General Styles */
 .organization-container {
-    position: relative;
     padding: 20px;
 }
-
-.add-member-form {
-    margin-bottom: 20px;
-}
-
+  
+/* Organization Cards */
 .org-cards {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 10px;
+}
+  
+.org-card {
+    background: #14142b;
+    color: white;
+    padding: 15px;
+    border: 1px solid white;
+    border-radius: 8px;
+    width: 300px;
+}
+  
+/* Buttons */
+.edit-btn, .delete-btn, .add-member-btn {
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
-.org-card {
-    background: #f0f0f0;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-.org-card.active-user {
-    border: 2px solid #2E6A9F;
-    background-color: #f0f8ff;
-}
-.toggle-mode-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #2E6A9F;
+.add-member-btn {
+    background-color: #2e6a9f;
     color: white;
     border: none;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    transition: background-color 0.3s ease;
 }
 
-.toggle-mode-btn:hover {
-    background-color: #0056b3;
+.edit-btn {
+    background-color: #4b75a5;
+    color: white;
+    border: none;
 }
 
-.delete-confirmation-modal {
+.delete-btn {
+    background-color: #ed7390;
+    color: white;
+    border: none;
+}
+
+/* Modal Overlay */
+.modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.8);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
 }
 
+/* Dark Mode Modal */
 .modal-content {
-    background: white;
+    background: #14142b;
     padding: 20px;
     border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.modal-actions button {
-    margin: 10px;
-}
-
-.add-member-form-btn {
-    background-color: #2E6A9F;
+    border: 1px solid white;
     color: white;
-    border: none;
+}
+
+/* Dark Mode Inputs */
+.modal-content input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 10px;
+    background: #1f1f3a;
+    border: 1px solid white;
+    color: white;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Checkbox styling */
+.switch-container {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+}
+
+/* Modal Action Buttons */
+.modal-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Cancel Button */
+.modal-cancel {
+    background-color: #4b4b4b;
+    color: white;
     padding: 10px;
-    border-radius: 5px;
+    border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-bottom: 10px;
+    border: 1px solid white;
+}
+
+/* Add / Save Button */
+.modal-add {
+    background-color: #2e6a9f;
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid white;
+}
+
+/* Delete Confirmation Button */
+.modal-delete {
+    background-color: #ed7390;
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid white;
 }

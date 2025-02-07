@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" 
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- Enable App Sandbox -->
+  <key>com.apple.security.app-sandbox</key>
+  <true/>
+
+  <!-- Application Identifier -->
+  <key>com.apple.application-identifier</key>
+  <string>RQ535HNNVW.com.georgiawitchel.cliinica</string>
+
+  <!-- Keychain Access (if needed) -->
+  <key>keychain-access-groups</key>
+  <array>
+    <string>RQ535HNNVW.*</string>
+  </array>
+
+  <!-- Network Access -->
+  <key>com.apple.security.network.client</key>
+  <true/>
+  <key>com.apple.security.network.server</key>
+  <true/>
+
+  <!-- Temporary Files and Shared Resources -->
+  <key>com.apple.security.files.user-selected.read-write</key>
+  <true/>
+
+  <!-- Allow IPC and Inherit Sandbox -->
+  <key>com.apple.security.inherit</key>
+  <true/>
+
+  <!-- Required for Distributed Notifications -->
+  <key>com.apple.security.automation.apple-events</key>
+  <true/>
+</dict>
+</plist>

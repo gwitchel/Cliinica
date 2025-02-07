@@ -1,21 +1,29 @@
 .flow-grid {
     display: flex;
-    max-width: 250px;
+    /* max-width: 250px; */
     flex-direction: column;
     padding: 16px;
-    grid-auto-rows: minmax(200px, auto);  /* Ensures rows are flexible */
 }
 .active-flow { 
-    background-color: #f0f0f0;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    margin-top: 20px;
-    /* width:'100%'; */
-    flex-grow: 1;
+    border-radius: 16px;
+    border: 1px solid #FFF;
+    box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    width: 100%;
+    padding: 16px;
+    margin-top: 16px;
+    overflow-y: auto;
 }
+
+.add-new-flow-bttn{
+    display: inline-flex;
+    padding: 11px 89px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    border: 1px solid #FFF;
+    background: #D7D7D7;
+    box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}π
 
 .mmm {
     background-color: #2E6A9F;

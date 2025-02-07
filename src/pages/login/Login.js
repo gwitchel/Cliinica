@@ -10,10 +10,12 @@ const Login = ({ setUserProfile }) => {
         const loadOrganization = async () => {
             try {
                 const processedData = await window.electron.loadCsv('organization');
+               
+            
                 setOrganization(processedData);
                 console.log('Organization:', processedData);
             } catch (error) {
-                console.error('Error loading organization data:', error);
+                console.error('Error loading organization data, creating organization', error);
             }
         };
 
@@ -92,12 +94,12 @@ const styles = {
         border: '1px solid #ccc',
         borderRadius: '8px',
         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-        fontFamily: 'Arial, sans-serif',
-        backgroundColor: '#f9f9f9',
+        backgroundColor: '#24263B',
+        fontFamily: 'Inter, sans-serif',
     },
     header: {
         textAlign: 'center',
-        color: '#333',
+        color: '#FFF',
     },
     form: {
         display: 'flex',
@@ -111,7 +113,8 @@ const styles = {
     label: {
         marginBottom: '5px',
         fontSize: '14px',
-        color: '#555',
+        color: '#FFF',
+
     },
     input: {
         padding: '10px',
@@ -122,8 +125,8 @@ const styles = {
     button: {
         padding: '10px',
         fontSize: '16px',
-        color: '#fff',
-        backgroundColor: '#2E6A9F',
+        color: '#000',
+        backgroundColor: '#FFF',
         border: 'none',
         borderRadius: '4px',
         cursor: 'pointer',

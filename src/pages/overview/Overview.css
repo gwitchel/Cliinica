@@ -1,81 +1,126 @@
-/* Flexbox layout for cards with wrapping */
-.cards {
-    display: flex;
-    flex-wrap: wrap; /* Allow cards to wrap to the next line */
-    gap: 10px;
-    /* margin-bottom: 20px; */
-    margin-left: 30px;
-    width: 100%; /* Ensure it takes up full available width */
-}
-.header {
-    display: flex;
-    gap: 10px;
-    /* justify-content: space-between; */
-    align-items: center;
-    /* margin-bottom: 20px; */
-}
-.search-controls{
+.overview{
     display: flex;
     flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 8px;
-    margin-top: 20px;
-}
-.search-controls-right{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    /* margin-bottom: 20px; */
+    width: 100%;
+    margin-top: 32px;
+    margin-left: 24px;
 }
 
-/* Overlay and popup container */
-.popup-overlay {
+.needs-attention-header{
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    align-self: stretch;
+    width: 100%;
+}
+
+.needs-attention-header-text{
+    color: #FFF;
+    font-family: Inter;
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); /* Automatically adjusts columns */
+    padding-top: 32px;
+}
+
+.needs-attention-header-numerical{
+    width: 50px;
+    height: 50px;
+    border-radius: 50px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    background-color: #BEE4F7;
+    color: #14142B;
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+
+.needs-attention-header-left{
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1 0 0;
+}
+
+input{
+    display: flex;
+    padding: 19px 35px;
+    align-items: center;
+    flex: 1 0 0;;
+    border-radius: 16px;
+    border: 1px solid #E8F5F5;
+    background: #24263B;
+    box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    flex-grow: 1;
+    color: #FFF;
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.add-patient-button {
+    display: flex;
+    width: 192px;
+    height: 26px;
+    margin-right: 16px;
+
+    padding: 11px 32px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    background-color: #2E6A9F;
+    box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.25); 
+
+    color: #FFF;
+    font-family: Inter;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     z-index: 1000;
 }
 
-/* Styling for the popup container */
-.popup-container {
-    background-color: white;
-    border-radius: 8px;
+.modal-content-2 {
+    border: 1px solid #E8F5F5;
+    background: #24263B;
+    box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.25);
     padding: 20px;
-    width: 80%;
-    height: 80%;
-    max-width: 1200px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
     position: relative;
-    overflow-y: auto;
-    
 }
 
-/* Close button for the popup */
-.close-popup-btn {
-    background-color: #fff;
+.close-button {
     position: absolute;
     top: 10px;
-    right: 10px;
-    padding: 10px;
-    border: none;
+    right: 15px;
+    font-size: 18px;
     cursor: pointer;
-}
-
-.search-bar {
-    /* width: 100%; */
-    height: 20px;
-    max-width: 200px;
-    padding: 8px;
-    margin: 10px 0;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    background: none;
+    border: none;
 }

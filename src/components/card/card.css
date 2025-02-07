@@ -1,0 +1,56 @@
+.card {
+    display: flex;
+    width: 270px;
+    height: 100px;
+    padding: 24px 26px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 7px;
+    border-radius: 16px;
+    background: #24263B;
+    box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    border-color: transparent;
+    margin-bottom: 10px;
+}
+
+.card-title {
+    color: #FFF;
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    align-self: stretch;
+}
+
+.card-subtitle {
+    color: #BEE4F7;
+    font-family: Inter;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    align-self: stretch;
+}
+
+.card-description {
+    color: #FFF;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    flex: 1 0 0;
+    align-self: stretch;
+}
+
+.card-tagline {
+    align-self: stretch;
+    color: #FFF;
+    text-align: right;
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}

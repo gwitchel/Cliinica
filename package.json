@@ -1,6 +1,6 @@
 {
   "name": "Cliinica",
-  "version": "1.0.0",
+  "version": "1.0.17",
   "description": "Patient intake and referral tracking",
   "main": "main.js",
   "author": "Georgia Witchel",
@@ -15,6 +15,7 @@
   "keywords": [],
   "license": "MIT",
   "dependencies": {
+    "@iconify/react": "^5.2.0",
     "browserify-fs": "^1.0.0",
     "buffer": "^6.0.3",
     "css-loader": "^7.1.2",
@@ -42,7 +43,8 @@
     "@babel/preset-env": "^7.26.0",
     "@babel/preset-react": "^7.25.9",
     "babel-loader": "^9.2.1",
-    "electron": "^26.0.0",
+    "copy-webpack-plugin": "^12.0.2",
+    "electron": "^26.6.10",
     "electron-builder": "^25.1.8",
     "electron-notarize": "^1.2.2",
     "html-webpack-plugin": "^5.6.3",
@@ -58,6 +60,7 @@
       "dist/**/*",
       "node_modules/**/*",
       "data-preprocessing/**/*",
+      "public/**/*",
       "preload.js",
       "assets/**/*",
       "main.js",
@@ -105,9 +108,21 @@
       "output": "dist"
     },
     "mac": {
+      "target": [
+        {
+          "target": "mas",
+          "arch": [
+            "universal"
+          ]
+        }
+      ],
       "icon": "assets/logo.icns",
-      "identity": " georgia witchel (RQ535HNNVW)",
-      "hardenedRuntime": true
+      "category": "public.app-category.medical",
+      "provisioningProfile": "build/Patient_Intake.provisionprofile",
+      "hardenedRuntime": false,
+      "minimumSystemVersion": "12.0",
+      "entitlements": "build/entitlements.mas.plist",
+      "entitlementsInherit": "build/entitlements.mas.inherit.plist"
     },
     "win": {
       "target": [
@@ -122,8 +137,7 @@
         "deb"
       ],
       "icon": "build/icons"
-    },
-    "afterSign": "afterSign.js"
+    }
   },
   "nsis": {
     "oneClick": true,

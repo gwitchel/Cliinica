@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
 
 module.exports = (env, argv) => ({
@@ -15,6 +16,11 @@ module.exports = (env, argv) => ({
             template: './src/index.html', // Points to your React HTML template
             filename: 'index.html',
         }),
+        new CopyWebpackPlugin({
+            patterns: [
+              { from: 'public', to: '.' }
+            ]
+          }),
         new webpack.ProvidePlugin({
             process: 'process/browser',
             Buffer: ['buffer', 'Buffer'],

@@ -2,18 +2,18 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './ReferralCard.css';
 import { FaUser, FaTrash } from 'react-icons/fa'; // FontAwesome icons
+import Card from './card/card';
 
 const ReferralCard = ({ referral, onClick }) => {
     return (
         <div 
-            className='card' 
             onClick={onClick} // Select this referral
         >
-            <div className="card-header">
-                <div><strong> {referral.Name}</strong></div>
-                <div>{referral.MRN}</div>
-                {referral.next_steps && <div>{referral.next_steps}</div>}
-            </div>
+            <Card
+                title={referral.Name}
+                subtitle={referral.MRN}
+                body={referral.next_steps? referral.next_steps : ''}
+            />
         </div>
     );
 };

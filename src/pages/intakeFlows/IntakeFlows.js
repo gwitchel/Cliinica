@@ -73,7 +73,7 @@ const IntakeFlows = ({userProfile}) => {
           ))}
             {/* Add New Flow Button */}
         
-          {(!showNewFlow && userProfile.isAdmin== 'true') && <button className='mmm' onClick={handleAddNewFlow}><FaPlus /></button>}
+          {(!showNewFlow && userProfile.isAdmin) && <button className="add-new-flow-bttn"onClick={handleAddNewFlow}>Add new flow +</button>}
           {/* Add New Flow Button */}
           {showNewFlow && <button onClick={() => setShowNewFlow(false)} style={{backgroundColor: "#ED7390", color: "white", padding: "10px", border: "none", borderRadius: "4px" }}>Cancel</button>}
           
@@ -93,11 +93,11 @@ const IntakeFlows = ({userProfile}) => {
                 onSave={(flow)=>{setSelectedFlow(flow), setShowNewFlow(false), fetchJsonData()}} // Save and close
               />
             )}
-            { selectedFlow && (
+            { (selectedFlow && !showNewFlow) && (
               <BigIntakeFlowCard
                 flow ={selectedFlow}
                 onDelete={(flow) => {
-                  if(organization && userProfile && userProfile.isAdmin == 'true'){
+                  if(organization && userProfile && userProfile.isAdmin){
                     window.electron.deleteFlow(flow.data.title); setSelectedFlow(null), fetchJsonData()
                   } else {
                     alert('You do not have permission to delete this flow')

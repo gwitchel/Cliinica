@@ -12,7 +12,8 @@ window.electron = {
             callback(event, updatedFileName);
         });
     },
-
+    ensureOneDrivePath: () => {return ipcRenderer.invoke('ensure-one-drive-path')},
+    getOneDrivePath: () => {return ipcRenderer.invoke('get-one-drive-path')},
     saveCsvFile: (filePath, data) => ipcRenderer.send('save-csv', filePath, data),
     saveJsonFile: (filePath, data)=> ipcRenderer.send('save-json', filePath, data),
     deleteFlow: (filePath) => ipcRenderer.send('delete-flow', filePath),

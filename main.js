@@ -18,38 +18,12 @@ async function getBasePath() {
     if (fs.existsSync(configPath)) {
         const configData = JSON.parse(fs.readFileSync(configPath, 'utf8'));
         oneDrivePath = configData.oneDrivePath;
+    } else {
+        oneDrivePath = "";
     }
 
-    // Validate the stored path
-    if (!oneDrivePath || !fs.existsSync(oneDrivePath)) {
-        console.warn("OneDrive path is invalid or missing:", oneDrivePath);
-
-        const userResponse = await dialog.showOpenDialog({
-            title: "Select Your OneDrive Folder",
-            properties: ["openDirectory"],
-            message: "Please select your OneDrive directory to configure the app.",
-        });
-
-        if (userResponse.canceled || !userResponse.filePaths.length) {
-            throw new Error("OneDrive path selection was canceled.");
-        }
-
-        oneDrivePath = userResponse.filePaths[0];
-
-        if (!fs.existsSync(oneDrivePath)) {
-            console.error("Selected path does not exist:", oneDrivePath);
-            throw new Error("Invalid OneDrive path selected.");
-        }
-
-        // Save the new path to the config
-        const configData = { oneDrivePath };
-        fs.writeFileSync(configPath, JSON.stringify(configData, null, 2), 'utf8');
-    }
-
-    console.log("Using OneDrive path:", oneDrivePath);
     return path.normalize(oneDrivePath); // Normalize for platform compatibility
 }
-
 
 function createWindow() {
     if (process.platform === 'darwin') {
@@ -62,8 +36,8 @@ function createWindow() {
     app.setName('Cliinica');
 
     const mainWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
+        width: 1605,
+        height: 980,
         icon:  path.join(process.resourcesPath, process.platform === 'darwin' ? 'assets/logo.png' : 'assets/logo.ico'),
         webPreferences: {
             preload: join(__dirname, 'preload.js'),
@@ -139,76 +113,133 @@ ipcMain.handle('load-active-patient-flows', async (event) => {
 
 async function loadCsvData(fileName) {
     try {
-        // Construct the file path using process.resourcesPath
-        // const filePath = path.join(__dirname, `${fileName}.csv`);
-        // const basePath = app.isPackaged
-        // ? process.resourcesPath // Production mode
-        // : __dirname; // Development mode
+      const basePath = await getBasePath();
+      const filePath = path.join(basePath, `${fileName}.csv`);
+  
+      if (!fs.existsSync(filePath)) {
+        throw new Error(`File not found: ${filePath}`);
+      }
+  
 
+      const stats = fs.statSync(filePath);
+      if (stats.size === 0) {
+        return [];
+      }
+  
+      return new Promise((resolve, reject) => {
+        const rows = [];
+        let firstHeader = null;
+        let headerList = null;
+  
+        fs.createReadStream(filePath)
+          .pipe(csvParser())
+          .on('headers', (headers) => {
+            if (headers.length) {
+              firstHeader = headers[0];
+              headerList = headers;
+            }
+          })
+          .on('data', (row) => rows.push(row))
+          .on('end', () => {
+            console.log("HEADERSSSSSSSS", firstHeader)
+            console.log("ROWS", rows)
+            if (rows.length === 0 && firstHeader) {
+              // Return empty object with the headers as keys
+              let emptyObj = {};
+              headerList.forEach(h => emptyObj[h] = '');
+              console.log("RESOLVING EMPTY", emptyObj)
+              resolve([emptyObj]);
+            } else {
+              resolve(rows);
+            }
+          })
+          .on('error', (err) => reject(err));
+      });
+    } catch (error) {
+      console.error(`Error loading CSV file "${fileName}":`, error);
+      throw error;
+    }
+  }
+  
+  
+
+
+// IPC handlers for loading and saving CSV data
+
+ipcMain.handle('load-csv', async (event, sheetName) => {
+    if (!sheetName) {
+        throw new Error(`Sheet name is required.`);
+    }
+
+    const basePath = await getBasePath();
+    const filePath = path.join(basePath, `${sheetName}.csv`);
+    
+    if (!fs.existsSync(filePath)) {
+        // If the file doesn't exist, create it with default headers (or leave empty if preferred)
         const basePath = await getBasePath();
 
         const filePath = path.join(basePath, `${fileName}.csv`);
-
-
-        // Debugging: Log the resolved file path
-        console.log(`Resolved file path for ${fileName}: ${filePath}`);
-
-        // Check if the file exists
-        if (!fs.existsSync(filePath)) {
-            console.error(`File not found: ${filePath}`);
-            throw new Error(`File not found: ${filePath}`);
-        }
-
-        // Parse the CSV data into a structured format
-        const rows = [];
-        return new Promise((resolve, reject) => {
-            fs.createReadStream(filePath)
-                .pipe(csvParser())
-                .on('data', (data) => rows.push(data))
-                .on('end', () => resolve(rows))
-                .on('error', (error) => reject(error));
-        });
-    } catch (error) {
-        console.error(`Error loading CSV file "${fileName}":`, error);
-        throw error;
+        fs.writeFileSync(filePath, defaultContent, 'utf8');
     }
-}
 
-// IPC handlers for loading and saving CSV data
-ipcMain.handle('load-csv', async (event, sheetName) => {
-    // const filePath = filePaths.find(file => basename(file) === `${sheetName}.csv`);
-    if (sheetName) {
-        return await loadCsvData(sheetName);
-    } else {
-        throw new Error(`File for sheet "${sheetName}" not found.`);
-    }
+    return await loadCsvData(sheetName);
 });
 
 async function saveCsvFile(fileName, data) {
     try {
-        const basePath = await getBasePath();
-
-        const filePath = path.join(basePath, `${fileName}`);
-
-        if (!Array.isArray(data) || data.length === 0) {
-            throw new Error('Data must be a non-empty array of objects.');
+      const basePath = await getBasePath(); // Custom function that resolves your desired base path
+      const filePath = path.join(basePath, fileName);
+  
+      if (!Array.isArray(data)) {
+        throw new Error('Data must be an array.');
+      }
+  
+      // Check whether the file already exists
+      const fileExists = fs.existsSync(filePath);
+      let csvContent = '';
+  
+      if (!fileExists) {
+        // If the CSV does not exist, create it with the first line of data being the keys
+        if (data.length === 0 || (data.length === 1 && Object.keys(data[0]).length === 0)) {
+          // If empty or only one empty object, we can’t guess the keys from data
+          // Either create an empty file or define some default headers:
+          csvContent = 'MRN,Patient Name,Date Added\n';
+        } else {
+          // We have data; get headers from the first object
+          const headers = Object.keys(data[0]);
+          // Generate CSV with these headers
+          csvContent = parse(data, { fields: headers });
         }
-
-        // Determine the CSV headers from the keys of the first object
-        const headers = Object.keys(data[0]);
-
-        // Parse the data into CSV format
-        const csvContent = parse(data, { headers });
-
-
-        // Write the CSV content to the file
-        fs.writeFileSync(filePath, csvContent, 'utf8');
-        console.log(`CSV file saved successfully to: ${filePath}`);
+      } else {
+        // If file already exists, use your original overwrite logic
+        // 1) Check if data is an array of strings (treat them as headers)
+        if (Array.isArray(data) && data.every(item => typeof item === 'string')) {
+          // Write a single header row from the string array
+          console.log("AERRAY DATA", data)
+          csvContent = data.join(',') + '\n';
+        }
+        // 2) Check if data is empty or has a single empty object
+        else if (data.length === 0 || (data.length === 1 && Object.keys(data[0]).length === 0)) {
+          const headers = data.length === 1 ? Object.keys(data[0]) : [];
+          csvContent = headers.join(',') + '\n';
+        }
+        // 3) Otherwise assume data is an array of objects and use JSON-to-CSV parsing
+        else {
+          const headers = Object.keys(data[0]);
+          csvContent = parse(data, { fields: headers });
+        }
+      }
+      
+  
+      // Write the CSV content to the file
+      fs.writeFileSync(filePath, csvContent, 'utf8');
+      console.log(`CSV file saved successfully to: ${filePath}`);
     } catch (error) {
-        console.error(`Error saving CSV file to ${fileName}:`, error);
-        throw error; // Rethrow error to allow the calling code to handle it
+      console.error(`Error saving CSV file to ${fileName}:`, error);
+      throw error; // Rethrow so calling code can handle it
     }
-}
+  }
+
 
 ipcMain.on('save-csv', (event, filePath, data) => {
     saveCsvFile(filePath, data); // Save CSV data to file
@@ -305,23 +336,19 @@ ipcMain.on('save-flow', (event, flow) => {
     event.reply('flow-saved', 'Flow saved successfully');
 });
 
+
+ipcMain.handle('ensure-one-drive-path', async () => {
+    console.log("setting one drive path");
+    return await ensureOneDrivePath();
+});
+
 // Ensure OneDrive path is set
 async function ensureOneDrivePath() {
-    const configPath = path.join(app.getPath('userData'), 'config.json');
+    try {
+        // Path to the configuration file
+        const cp = path.join(app.getPath('userData'), 'config.json');
 
-    // Load existing config
-    let oneDrivePath = null;
-    if (fs.existsSync(configPath)) {
-        const configData = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-        oneDrivePath = configData.oneDrivePath;
-        oneDrivePath = path.resolve(oneDrivePath);
-
-    }
-
-    // If path is not found or invalid, prompt the user
-    if (!oneDrivePath || !fs.existsSync(oneDrivePath)) {
-        console.warn("Invalid or missing OneDrive path:", oneDrivePath);
-
+        // Show a dialog to select the OneDrive folder
         const userResponse = await dialog.showOpenDialog({
             title: "Select Your OneDrive Folder",
             properties: ["openDirectory"],
@@ -329,32 +356,59 @@ async function ensureOneDrivePath() {
         });
 
         if (userResponse.canceled || !userResponse.filePaths.length) {
-            throw new Error("OneDrive path selection was canceled.");
+            console.warn("User canceled the OneDrive folder selection.");
+            return null;
         }
 
-        oneDrivePath = userResponse.filePaths[0];
+        const selectedPath = userResponse.filePaths[0];
 
-        // Validate the selected path
-        if (!fs.existsSync(oneDrivePath)) {
-            console.error("Selected path does not exist:", oneDrivePath);
+        // Check if the selected path exists
+        if (!fs.existsSync(selectedPath)) {
+            console.error("Selected path does not exist:", selectedPath);
             throw new Error("Invalid OneDrive path selected.");
         }
 
-        // Save the new path to the config
-        const configData = { oneDrivePath: path.normalize(oneDrivePath) }; // Normalize path
-        fs.writeFileSync(configPath, JSON.stringify(configData, null, 2), 'utf8');
+        // Normalize the path for consistency across platforms
+        const normalizedPath = path.normalize(selectedPath);
+
+        // Save the OneDrive path to the config file (overwrite existing file)
+        const configData = { oneDrivePath: normalizedPath };
+        fs.writeFileSync(cp, JSON.stringify(configData, null, 2), 'utf8');
+
+        console.log("OneDrive path configured successfully:", normalizedPath);
+
+        // Return the normalized path
+        return normalizedPath;
+    } catch (error) {
+        console.error("Error ensuring OneDrive path:", error);
+        throw error; // Rethrow the error for further handling
+    }
+}
+
+
+ipcMain.handle('get-one-drive-path', async () => {
+    console.log("getting one drive path");
+    const configPath = path.join(app.getPath('userData'), 'config.json');
+    console.log("Config path:", configPath);
+    
+    let oneDrivePath = null;
+    if (fs.existsSync(configPath)) {
+        const configData = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+        oneDrivePath = configData.oneDrivePath;
+    } else {
+        return null;
     }
 
-    console.log("Final OneDrive path:", oneDrivePath);
-    return path.normalize(oneDrivePath); // Normalize before returning
-}
+    return path.normalize(oneDrivePath); // Normalize for platform compatibility
+
+});
 
 
 app.whenReady()
     .then(async () => {
         try {
-            const oneDrivePath = await ensureOneDrivePath();
-            console.log("OneDrive path successfully set:", oneDrivePath);
+            // const oneDrivePath = await ensureOneDrivePath();
+            // console.log("OneDrive path successfully set:", oneDrivePath);
             // basePath = oneDrivePath;
 
             // Create the main window after OneDrive path is ready

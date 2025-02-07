@@ -74,7 +74,7 @@ const LittleFlowCard = ({ flow, onSave, onDelete }) => {
                 <h3>{flow.title}</h3>
                 <div className="action-buttons">
                     <button onClick={toggleEdit} className="icon-button">
-                        {!isEditing ? <FaEdit /> : <FaSave />}
+                        {!isEditing ? <FaEdit style={{color: '#fff'}}/> : <FaSave style={{color: '#fff'}}/>}
                     </button>
                 </div>
             </div>

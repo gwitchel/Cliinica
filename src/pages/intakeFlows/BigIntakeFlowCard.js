@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import "./BigIntakeFlowCard.css";
 
 const BigIntakeFlowCard = ({ flow, onDelete, organization }) => {
   const [showModal, setShowModal] = useState(false);
@@ -34,24 +35,21 @@ const BigIntakeFlowCard = ({ flow, onDelete, organization }) => {
   };
 
   return (
-    <div style={{ }}>
+    <div style={{}}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1 style={{ margin: 0 }}>{flow.data.title}</h1>
         <button
           onClick={handleDeleteClick}
           style={{
-            backgroundColor: '#ED7390',
-            color: 'white',
-            border: 'none', 
-            borderRadius: '4px',
-            padding: '10px',
-            cursor: 'pointer',
+            borderRadius: '16px',
+            borderWidth: '1px',
+            borderColor: "#fff"
           }}
         >
           Delete Flow
         </button>
       </div>
-      <p style={{ margin: '10px 0' }}>{flow.data.description}</p>
+      <div className="flow-step-title" style={{ margin: '10px 0' }}>{flow.data.description}</div>
 
       <div>
         {flow.data.flows.map((sequence, seqIndex) => (
@@ -66,29 +64,24 @@ const BigIntakeFlowCard = ({ flow, onDelete, organization }) => {
               {sequence.map((step, stepIndex) => (
                 <div
                   key={stepIndex}
-                  style={{
-                    flex: 1,
-                    border: '1px solid #ccc',
-                    borderRadius: '8px',
-                    padding: '10px',
-                    backgroundColor: '#f9f9f9',
-                  }}
+                  className='inner-card'
                 >
-                  <h4 style={{margin:0}}>{step.title || `Step ${stepIndex + 1}`}</h4>
-                  <p>{step.description}</p>
-                  <h5 style={{margin:0}}> Deliverable</h5>
+                  <div className="flow-step-title">{step.title || `Step ${stepIndex + 1}`}</div>
+                  <div className="flow-step-title">{step.description}</div>
+                  <div className="flow-step-title" style={{margin:0}}> Deliverable</div>
+                  
                   <div>
                     {step.deliverables.length > 0 ? (
-                    step.deliverables.map((deliverable, i) => <div>{deliverable}</div>)
+                    step.deliverables.map((deliverable, i) => <div className="flow-step-title">{deliverable}</div>)
                     ) : (
-                    <p>No deliverables</p>
+                    <div className="flow-step-title">No deliverables</div>
                     )}
                   </div>
                   <div>
-                    <h5 style={{margin:0, marginTop: '16px'}}> Person</h5>
+                    <div style={{margin:0, marginTop: '16px'}} className="flow-step-title"> Person</div>
                     {step.peopleInvolved.length > 0 ? (
                     step.peopleInvolved.map((personId, i) => (
-                        <div> {getPersonName(personId)} </div>
+                        <div className="flow-step-title"> {getPersonName(personId)} </div>
                     ))
                     ) : (
                     <li>No one assigned</li>
@@ -117,22 +110,16 @@ const BigIntakeFlowCard = ({ flow, onDelete, organization }) => {
           }}
         >
           <div
-            style={{
-              backgroundColor: 'white',
-              padding: '20px',
-              borderRadius: '8px',
-              width: '400px',
-              textAlign: 'center',
-            }}
+            className='confirm-delete-module'
           >
-            <h2>Confirm Deletion</h2>
-            <p>Deleting a flow will not delete the flow from patients for which is has already been assigned, it will just prevent you from 
+            <h2>Are you sure you want to delete "{flow.data.title}"</h2>
+            <div className='confirm-delete-text'>Deleting a flow will not delete the flow from patients for which is has already been assigned, it will just prevent you from 
                 viewing the flow or adding additional patients to the flow. If you'd like to remove this flow from a single patient
-                you can do so from the patients tab.  </p>
-            <p style={{ fontWeight: 'bold' }}>{flow.data.title}</p>
+                you can do so from the patients tab. </div>
             <input
               type="text"
               value={userInput}
+              placeholder='enter flow title to delete'
               onChange={(e) => setUserInput(e.target.value)}
               style={{
                 flexGrow: 1,

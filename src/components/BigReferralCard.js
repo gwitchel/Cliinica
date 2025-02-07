@@ -195,17 +195,17 @@ const BigReferralCard = ({ referral, setChangelog,changelog, onClose, refresh, h
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
                     {activeTab === 'current' && (
-                        <button onClick={handleEditToggle}>
+                        <div onClick={handleEditToggle} style={{padding: '10px'}}>
                             {!isEditing ? (
-                                <FaEdit style={{ color: "#000", width: '20px', height: '20px' }} />
+                                <FaEdit style={{ color: "#FFF", width: '20px', height: '20px' }} />
                             ) : (
-                                <FaSave style={{ color: "#000", width: '20px', height: '20px' }} />
+                                <FaSave style={{ color: "#FFF", width: '20px', height: '20px' }} />
                             )}
-                        </button>
+                        </div>
                     )}
-                    <button onClick={onClose}>
-                        <FaRegWindowClose style={{ color: "#000", width: '20px', height: '20px' }} />
-                    </button>
+                    <div onClick={onClose}  style={{padding: '10px'}}>
+                        <FaRegWindowClose style={{ color: "#FFF", width: '20px', height: '20px' }} />
+                    </div>
                 </div>
             </div>
 
