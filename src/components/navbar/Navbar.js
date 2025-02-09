@@ -4,7 +4,9 @@ import './Navbar.css';
 
 const Navbar = ({ selected, onSelect, userProfile, setUserProfile }) => {
   const topItems = ['Patients', 'Organization', 'Flows'];
-  const bottomItems = ['Settings', 'Log out'];
+  
+  // Only include 'Settings' if user is an admin
+  const bottomItems = userProfile.isAdmin ? ['Settings', 'Log out'] : ['Log out'];
 
   const iconMap = {
     Patients: 'mdi:account-group',

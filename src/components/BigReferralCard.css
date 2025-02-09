@@ -275,7 +275,7 @@
 }
 
 .flows-tab::-webkit-scrollbar-track {
-    background: #2E6A9F;
+    background: #24263B;
     border-radius: 10px;
 }
 
@@ -304,7 +304,7 @@
 
 /* Popup box for delete confirmation */
 .delete-confirm-popup {
-    background-color: #2E6A9F;
+    background-color: #24263B;
     border: 2px solid #fff;
     color: #fff;
     padding: 20px;

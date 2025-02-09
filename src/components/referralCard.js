@@ -10,7 +10,7 @@ const ReferralCard = ({ referral, onClick }) => {
             onClick={onClick} // Select this referral
         >
             <Card
-                title={referral.Name}
+                title={referral['Patient Name']}
                 subtitle={referral.MRN}
                 body={referral.next_steps? referral.next_steps : ''}
             />

@@ -1,0 +1,16 @@
+.settings-subcontainer{
+    border: 1px solid white;
+    border-radius: 8px;
+    margin: 8px;
+    padding: 16px;
+    width: 90%;
+}
+
+.settings-container {
+    display: flex;
+    flex-direction: column;
+    margin: 16px;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}

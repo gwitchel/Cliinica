@@ -59,22 +59,35 @@ function createWindow() {
 }
 
 async function loadActivePatientFlows() {
-    try {
-        const basePath = await getBasePath();
-        const filePath = path.join(basePath, 'patient-flows.json');
-        const fileContent = await promises.readFile(filePath, 'utf8');  // Correct usage of fs.promises.readFile
-        return  JSON.parse(fileContent) 
-    } catch (error) {
-        console.error("Error loading JSON files:", error);
-        throw error; // Rethrow error to handle it in calling code
-    }
+  try {
+      const basePath = await getBasePath();
+      const filePath = path.join(basePath, 'patient-flows.json');
+
+      // Ensure the file exists before reading it
+      if (!fs.existsSync(filePath)) {
+          console.warn("patient-flows.json not found. Creating a new one.");
+          await promises.writeFile(filePath, JSON.stringify({}), 'utf8'); // Create empty JSON
+      }
+
+      // Read and return the JSON content
+      const fileContent = await promises.readFile(filePath, 'utf8');
+      return JSON.parse(fileContent);
+  } catch (error) {
+      console.error("Error loading JSON files:", error);
+      throw error; // Rethrow error to handle it in calling code
+  }
 }
 
 async function loadAllFlows() {
     try {       
         const basePath = await getBasePath();
         const flowsDirectory = path.join(basePath, 'flows');
-        
+        try {
+          await fs.access(flowsDirectory);
+        } catch (err) {
+            await fs.promises.mkdir(flowsDirectory, { recursive: true });            // Directory doesn't exist, create it
+        }
+
         // Use fs.promises.readdir to list files in the directory
         const files = await promises.readdir(flowsDirectory);  // Correctly using fs.promises.readdir
         console.log("Files in directory:", files);
@@ -178,7 +191,7 @@ ipcMain.handle('load-csv', async (event, sheetName) => {
         // If the file doesn't exist, create it with default headers (or leave empty if preferred)
         const basePath = await getBasePath();
 
-        const filePath = path.join(basePath, `${fileName}.csv`);
+        const filePath = path.join(basePath, `${sheetName}.csv`);
         fs.writeFileSync(filePath, defaultContent, 'utf8');
     }
 
@@ -426,28 +439,41 @@ app.whenReady()
         console.error('Error during app initialization:', err);
     });
 
+  
+    app.on('window-all-closed', async () => {
+        const basePath = await getBasePath();
+        const backupPath = path.join(basePath, 'backups');
+        const patientFlowsPath = path.join(basePath, 'patient-flows'); // Directory now
+        const patientsCsvPath = path.join(basePath, 'patients.csv');
     
-app.on('window-all-closed', async () => {
-
-    // if (process.platform !== 'darwin') app.quit();
-        // make backups of the patient-flows.json file
-    const basePath = await getBasePath(); // Ensure basePath is resolved
-    const backupPath = path.join(basePath, 'backups');
-    const backupFileName = `patient-flows_backup.json`;
-    const backupFileNamePatients = `patients_backup.csv`;
-
-    const backupFilePath = path.join(backupPath, backupFileName);
-    const backupFilePathPatients = path.join(backupPath, backupFileNamePatients);
-
-    if (!fs.existsSync(backupPath)) {
-        fs.mkdirSync(backupPath);
-    }
-    fs.copyFileSync(path.join(basePath, 'patient-flows.json'), backupFilePath);
-    fs.copyFileSync(path.join(basePath, 'patients.csv'), backupFilePathPatients);
-    console.log(`Backup of patients.csv saved to: ${backupFilePathPatients}`);
-    console.log(`Backup of patient-flows.json saved to: ${backupFilePath}`);
-    app.quit();
-});
+        const backupFilePathPatients = path.join(backupPath, 'patients_backup.csv');
+        const backupDirPath = path.join(backupPath, 'patient-flows_backup'); // Directory backup
+    
+        // Ensure the backup directory exists
+        if (!fs.existsSync(backupPath)) {
+            fs.mkdirSync(backupPath, { recursive: true });
+        }
+    
+        // Ensure patient-flows is a directory and copy it recursively
+        if (fs.existsSync(patientFlowsPath) && fs.statSync(patientFlowsPath).isDirectory()) {
+            fs.cpSync(patientFlowsPath, backupDirPath, { recursive: true });
+            console.log(`Backup of patient-flows directory saved to: ${backupDirPath}`);
+        } else {
+            console.warn(`Warning: patient-flows directory not found. Skipping backup.`);
+        }
+    
+        // Ensure patients.csv exists and is a file
+        if (fs.existsSync(patientsCsvPath) && fs.statSync(patientsCsvPath).isFile()) {
+            fs.copyFileSync(patientsCsvPath, backupFilePathPatients);
+            console.log(`Backup of patients.csv saved to: ${backupFilePathPatients}`);
+        } else {
+            console.warn(`Warning: patients.csv not found. Creating a new one.`);
+            fs.writeFileSync(patientsCsvPath, 'MRN,Patient Name\n', 'utf8');
+        }
+    
+        app.quit();
+    });
+    
 
 app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

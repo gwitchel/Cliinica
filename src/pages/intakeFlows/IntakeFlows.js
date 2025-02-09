@@ -23,7 +23,6 @@ const IntakeFlows = ({userProfile}) => {
     }
   };
 
-  console.log("SHownewFlow", showNewFlow)
   useEffect(() => {
     fetchOrganization();
   }, []);

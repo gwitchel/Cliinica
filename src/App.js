@@ -8,6 +8,7 @@ import Login from './pages/login/Login';
 import Onboarding from './onboarding/Onboarding';
 import Navbar from './components/navbar/Navbar';
 import Header from './components/header/Header'
+import Settings from './onboarding/Settings';
 const App = () => {
     
     const [activeTab, setActiveTab] = useState('Patients');
@@ -45,7 +46,7 @@ const App = () => {
                 return true;
             }
             console.log("organizations", organizations);
-            const hasAdmin = organizations.some((member) => member.isAdmin == "true");
+            const hasAdmin = organizations.some((member) => member.isAdmin);
             if (!hasAdmin) {
                 console.log('No admin user found in organization.');
                 return true;
@@ -114,9 +115,9 @@ const App = () => {
     }, []);
 
 
-    // if (showOnboarding) {
-    //     return <Onboarding setShowOnboarding={setShowOnboarding}/>;
-    // }
+    if (showOnboarding) {
+        return <Onboarding setShowOnboarding={setShowOnboarding}/>;
+    }
     
     if (!userProfile) {
         return (
@@ -135,6 +136,7 @@ const App = () => {
               <Organization userProfile={userProfile} setUpdatedOrganization={setOrganization} />
             )}
             {activeTab === 'Flows' && <IntakeFlows userProfile={userProfile} />}
+            {activeTab === 'Settings' && <Settings />}
           </div>
         </div>
       );

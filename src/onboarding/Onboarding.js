@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Organization from '../pages/organization/Organization';
 import { FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
+import OneDrivePathSetup from './OneDrivePathSetup'; // Import subcomponent
 
 const Onboarding = ({ setShowOnboarding }) => {
     // ----- STATE -----
@@ -11,28 +12,7 @@ const Onboarding = ({ setShowOnboarding }) => {
     // ----- EFFECTS -----
     useEffect(() => {
         loadOrganizations();
-        fetchOneDrivePath();
     }, []);
-
-    // ----- STEP 1: OneDrive PATH -----
-    const fetchOneDrivePath = async () => {
-        try {
-            const path = await window.electron.getOneDrivePath();
-            setOneDrivePath(path);
-        } catch (error) {
-            console.error('Error fetching OneDrive path:', error);
-        }
-    };
-
-    const configureOneDrivePath = async () => {
-        console.log('Configuring OneDrive path...');
-        try {
-            const p = await window.electron.ensureOneDrivePath();
-            setOneDrivePath(p);
-        } catch (error) {
-            console.error('Error configuring OneDrive path:', error);
-        }
-    };
 
     // ----- STEP 2: ORGANIZATION -----
     const loadOrganizations = async () => {
@@ -65,33 +45,7 @@ const Onboarding = ({ setShowOnboarding }) => {
     const renderTabContent = () => {
         switch (activeTab) {
             case 1:
-                return (
-                    <div>
-                        <h2>Step 1: Configure OneDrive Path</h2>
-                        {oneDrivePath ? (
-                            <p>
-                                <strong>Current OneDrive Path: </strong>
-                                {oneDrivePath}
-                            </p>
-                        ) : (
-                            <p>No OneDrive path configured yet.</p>
-                        )}
-                        <button
-                            onClick={configureOneDrivePath}
-                            style={{
-                                marginTop: '20px',
-                                padding: '10px 20px',
-                                backgroundColor: '#4CAF50',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '5px',
-                                cursor: 'pointer',
-                            }}
-                        >
-                            {oneDrivePath ? 'Change OneDrive Path' : 'Configure OneDrive Path'}
-                        </button>
-                    </div>
-                );
+                return <OneDrivePathSetup oneDrivePath={oneDrivePath} setOneDrivePath={setOneDrivePath} />;
             case 2:
                 return (
                     <div>

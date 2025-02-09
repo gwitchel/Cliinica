@@ -1,0 +1,34 @@
+/* Styles for OneDrivePathSetup Component */
+
+.title {
+    font-family: 'Inter, sans-serif';
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.current-path {
+    font-family: 'Inter, sans-serif';
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.no-path {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: red;
+}
+
+.set-path-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #fff;
+    color: #14142b;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+

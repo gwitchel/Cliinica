@@ -24,17 +24,18 @@
     padding: 8px;
     border-radius: 4px;
     cursor: pointer;
+    margin: 8px;
 }
 
 .add-member-btn {
-    background-color: #2e6a9f;
-    color: white;
+    background-color: #FFF;
+    color: #14142b;
     border: none;
 }
 
 .edit-btn {
-    background-color: #4b75a5;
-    color: white;
+    background-color: #FFF;
+    color: #14142b;
     border: none;
 }
 
@@ -42,6 +43,11 @@
     background-color: #ed7390;
     color: white;
     border: none;
+}
+
+.delete-btn:disabled{
+    background-color: #4b4b4b;
+    color: white;
 }
 
 /* Modal Overlay */
@@ -82,13 +88,57 @@
     box-sizing: border-box;
 }
 
-/* Checkbox styling */
-.switch-container {
-    margin-top: 10px;
+
+.switch-container{
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    font-size: 14px;
+    align-items: center;
+    margin-top: 10px;
+}
+/* Checkbox styling */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.3s;
+    border-radius: 20px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #4CAF50;
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
 }
 
 /* Modal Action Buttons */

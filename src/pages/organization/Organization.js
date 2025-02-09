@@ -70,13 +70,23 @@ const Organization = ({ userProfile, setUpdatedOrganization }) => {
 
   const handleDeleteMember = () => {
     if (memberToDelete !== null) {
-      const updatedList = organizations.filter((_, index) => index !== memberToDelete);
-      setOrganizations(updatedList);
-      window.electron.saveCsvFile("organization.csv", updatedList);
-      setShowDeleteConfirmation(false);
-      setMemberToDelete(null);
+        const member = organizations[memberToDelete];
+
+        // Prevent user from deleting themselves
+        if (member._id === userProfile._id) {
+            alert("You cannot delete yourself.");
+            setShowDeleteConfirmation(false);
+            return;
+        }
+
+        const updatedList = organizations.filter((_, index) => index !== memberToDelete);
+        setOrganizations(updatedList);
+        window.electron.saveCsvFile("organization.csv", updatedList);
+        setShowDeleteConfirmation(false);
+        setMemberToDelete(null);
     }
-  };
+};
+
 
   return (
     <div className="organization-container">
@@ -92,20 +102,25 @@ const Organization = ({ userProfile, setUpdatedOrganization }) => {
               <p>Admin: {organization.isAdmin ? "Yes" : "No"}</p>
               {userProfile.isAdmin && (
                 <div className="org-actions">
-                  <button className="edit-btn" onClick={() => openEditMemberModal(organization)}>
-                    <FaEdit /> Edit
-                  </button>
-                  <button
-                    className="delete-btn"
-                    onClick={() => {
-                      setShowDeleteConfirmation(true);
-                      setMemberToDelete(index);
-                    }}
-                  >
-                    <FaTrash /> Delete
-                  </button>
+                    <button className="edit-btn" onClick={() => openEditMemberModal(organization)}>
+                        <FaEdit /> Edit
+                    </button>
+                    <button
+                        className="delete-btn"
+                        onClick={() => {
+                            if (organization._id === userProfile._id) {
+                                alert("You cannot delete yourself.");
+                            } else {
+                                setShowDeleteConfirmation(true);
+                                setMemberToDelete(index);
+                            }
+                        }}
+                        disabled={organization._id === userProfile._id} // Disable button for self
+                    >
+                        <FaTrash /> Delete
+                    </button>
                 </div>
-              )}
+            )}
             </div>
           ))
         ) : (
@@ -157,13 +172,17 @@ const Organization = ({ userProfile, setUpdatedOrganization }) => {
               onChange={(e) => setCurrentMember({ ...currentMember, role: e.target.value })}
             />
             <div className="switch-container">
-              Admin Privileges
-              <input
-                type="checkbox"
-                checked={currentMember.isAdmin}
-                onChange={(e) => setCurrentMember({ ...currentMember, isAdmin: e.target.checked })}
-              />
+                <span>Admin Privileges</span>
+                <label className="switch">
+                    <input
+                        type="checkbox"
+                        checked={currentMember.isAdmin}
+                        onChange={(e) => setCurrentMember({ ...currentMember, isAdmin: e.target.checked })}
+                    />
+                    <span className="slider"></span>
+                </label>
             </div>
+
             <div className="modal-actions">
               <button className="modal-cancel" onClick={() => setShowModal(false)}>
                 Cancel
