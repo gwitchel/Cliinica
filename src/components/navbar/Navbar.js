@@ -6,7 +6,8 @@ const Navbar = ({ selected, onSelect, userProfile, setUserProfile }) => {
   const topItems = ['Patients', 'Organization', 'Flows'];
   
   // Only include 'Settings' if user is an admin
-  const bottomItems = userProfile.isAdmin ? ['Settings', 'Log out'] : ['Log out'];
+  console.log("userProfile.isAdmin", userProfile.isAdmin);
+  const bottomItems = userProfile.isAdmin == 'true' ? ['Settings', 'Log out'] : ['Log out'];
 
   const iconMap = {
     Patients: 'mdi:account-group',

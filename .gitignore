@@ -1,2 +1,6 @@
 *.csv
 node_modules/
+dist/
+build/
+*.plist
+*.provisionprofile

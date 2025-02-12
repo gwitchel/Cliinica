@@ -13,7 +13,7 @@ const IntakeFlows = ({userProfile}) => {
   const [error, setError] = useState(null);
   const [selectedFlow, setSelectedFlow] = useState(null)
   const [organization, setOrganization] = useState(null)
-
+  console.log("userProfile.isAdmin", userProfile.isAdmin)
   const fetchOrganization = async () => {
     try {
       const data = await window.electron.loadCsv('organization');
@@ -72,7 +72,7 @@ const IntakeFlows = ({userProfile}) => {
           ))}
             {/* Add New Flow Button */}
         
-          {(!showNewFlow && userProfile.isAdmin) && <button className="add-new-flow-bttn"onClick={handleAddNewFlow}>Add new flow +</button>}
+          {(!showNewFlow && userProfile.isAdmin == 'true') && <button className="add-new-flow-bttn"onClick={handleAddNewFlow}>Add new flow +</button>}
           {/* Add New Flow Button */}
           {showNewFlow && <button onClick={() => setShowNewFlow(false)} style={{backgroundColor: "#ED7390", color: "white", padding: "10px", border: "none", borderRadius: "4px" }}>Cancel</button>}
           

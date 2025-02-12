@@ -7,31 +7,34 @@
   <key>com.apple.security.app-sandbox</key>
   <true/>
 
-  <!-- Application Identifier -->
+  <!-- Application Identifier for Main App -->
+  <!-- Hardcode your Team ID + explicit bundle ID -->
   <key>com.apple.application-identifier</key>
   <string>RQ535HNNVW.com.georgiawitchel.cliinica</string>
 
-  <!-- Keychain Access (if needed) -->
+  <!-- Keychain Access Group -->
+  <!-- Use your explicit ID or keep wildcard if you really need it. 
+       Typically, matching the app-identifier exactly is safest. -->
   <key>keychain-access-groups</key>
   <array>
-    <string>RQ535HNNVW.*</string>
+    <string>RQ535HNNVW.com.georgiawitchel.cliinica</string>
   </array>
 
-  <!-- Access to Network Resources -->
+  <!-- Network Access -->
   <key>com.apple.security.network.client</key>
   <true/>
   <key>com.apple.security.network.server</key>
   <true/>
 
-  <!-- Temporary Files and Shared Resources -->
+  <!-- Allow file read/write via user selection dialogs -->
   <key>com.apple.security.files.user-selected.read-write</key>
   <true/>
 
-  <!-- Allow IPC (Interprocess Communication) -->
+  <!-- Allow IPC (and child processes under the sandbox) -->
   <key>com.apple.security.inherit</key>
   <true/>
 
-  <!-- Required for Distributed Notifications -->
+  <!-- Enable automation or distributed notifications -->
   <key>com.apple.security.automation.apple-events</key>
   <true/>
 </dict>

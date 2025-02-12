@@ -51,7 +51,7 @@ function createWindow() {
     // win.webContents.openDevTools(); // Open DevTools
     mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
     // Uncomment this line to open DevTools
-    // mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools ();
 
     mainWindow.on('closed', () => {
         // Dereference the window object (optional cleanup)

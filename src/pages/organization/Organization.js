@@ -24,7 +24,7 @@ const Organization = ({ userProfile, setUpdatedOrganization }) => {
   };
 
   const openAddMemberModal = () => {
-    if (!userProfile.isAdmin) return;
+    if (userProfile.isAdmin == 'false') return;
     setIsEditing(false);
     setCurrentMember({
       firstName: "",
@@ -38,7 +38,7 @@ const Organization = ({ userProfile, setUpdatedOrganization }) => {
   };
 
   const openEditMemberModal = (member) => {
-    if (!userProfile.isAdmin) return;
+    if (userProfile.isAdmin == 'false') return;
     setIsEditing(true);
     setCurrentMember({ ...member });
     setShowModal(true);
@@ -99,8 +99,8 @@ const Organization = ({ userProfile, setUpdatedOrganization }) => {
               </h2>
               <p>Role: {organization.role}</p>
               <p>Username: {organization.username || "N/A"}</p>
-              <p>Admin: {organization.isAdmin ? "Yes" : "No"}</p>
-              {userProfile.isAdmin && (
+              <p>Admin: {organization.isAdmin == 'true' ? "Yes" : "No"}</p>
+              {userProfile.isAdmin == 'true' && (
                 <div className="org-actions">
                     <button className="edit-btn" onClick={() => openEditMemberModal(organization)}>
                         <FaEdit /> Edit
@@ -130,7 +130,7 @@ const Organization = ({ userProfile, setUpdatedOrganization }) => {
         )}
       </div>
 
-      {userProfile.isAdmin && (
+      {userProfile.isAdmin != 'false' && (
         <button className="add-member-btn" onClick={openAddMemberModal}>
           Add New Member
         </button>
