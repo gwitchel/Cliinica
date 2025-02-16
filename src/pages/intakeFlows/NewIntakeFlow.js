@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import FlowComponent from "./FlowComponent";
 import "./NewIntakeFlow.css";
 import './BigIntakeFlowCard.css'
-const { ipcRenderer } = window.require("electron");
+// const { ipcRenderer } = window.require("electron");
 
 const NewIntakeFlow = ({
   flowData = { title: "", description: "", flows: [], id: Date.now() },
@@ -17,7 +17,7 @@ const NewIntakeFlow = ({
   useEffect(() => {
     const loadOrganizations = async () => {
       try {
-        const processedData = await window.electron.loadCsv("organization");
+        const processedData = await window.electronAPI.loadCsv("organization");
         setPeople(processedData);
       } catch (error) {
         console.error("Error loading organizations data:", error);
@@ -115,8 +115,14 @@ const NewIntakeFlow = ({
   
     // Proceed with saving if all fields are filled
     const flowToSave = { title, description, id: flowData.id, flows };
-    ipcRenderer.send("save-flow", flowToSave);
-    ipcRenderer.once("flow-saved", (event, message) => alert(message));
+    // TODO - Save the flow to the database
+    // ipcRenderer.send("save-flow", flowToSave);
+    // ipcRenderer.once("flow-saved", (event, message) => alert(message));
+    window.electronAPI.saveFlow(flowToSave); // Send the flow data to the main process
+
+    window.electronAPI.onFlowSaved((event, message) => {
+      alert(message); // Handle the response once the flow is saved
+    });
     onSave({ data: flowToSave });
   };
 

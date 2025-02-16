@@ -1,6 +1,6 @@
 {
   "name": "Cliinica",
-  "version": "1.0.29",
+  "version": "1.2.0",
   "description": "Patient intake and referral tracking",
   "main": "main.js",
   "author": "Georgia Witchel",
@@ -71,7 +71,8 @@
       "patient-flows.json",
       "user-profile.json",
       "flows/**/*",
-      "!OneDrive/**"
+      "!OneDrive/**",
+      "index.html"
     ],
     "extraResources": [
       {
@@ -107,13 +108,14 @@
     "directories": {
       "output": "dist"
     },
+    
     "mac": {
       "target": ["dmg"],
-      "provisioningProfile": "build/Cliinica_provisioning_profile_2.provisionprofile",
+      "provisioningProfile": "build/Cliinica_global.provisionprofile",
       "identity": "georgia witchel (RQ535HNNVW)",
       "hardenedRuntime": true,
       "entitlements": "build/entitlements.mac.plist",
-      "entitlementsInherit": "build/entitlements.mac.inherit.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
       "helperBundleId": "com.georgiawitchel.cliinica.helper",
       "icon": "assets/logo.icns",
       "minimumSystemVersion": "12.0"

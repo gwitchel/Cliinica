@@ -9,6 +9,18 @@ const os = require('os'); // For detecting user-specific paths
 const { get } = require('http');
 
 
+process.on('uncaughtException', (error) => {
+  const errorLogPath = path.join(app.getPath('userData'), 'error.log');
+  fs.appendFileSync(errorLogPath, `${new Date().toISOString()} - Uncaught Exception: ${error.stack || error}\n`);
+  console.error('Uncaught Exception:', error);
+});
+
+process.on('unhandledRejection', (reason) => {
+  const errorLogPath = path.join(app.getPath('userData'), 'error.log');
+  fs.appendFileSync(errorLogPath, `${new Date().toISOString()} - Unhandled Rejection: ${reason}\n`);
+  console.error('Unhandled Rejection:', reason);
+});
+
 async function getBasePath() {
     const configPath = path.join(app.getPath('userData'), 'config.json');
     console.log("Config path:", configPath);
@@ -41,21 +53,17 @@ function createWindow() {
         icon:  path.join(process.resourcesPath, process.platform === 'darwin' ? 'assets/logo.png' : 'assets/logo.ico'),
         webPreferences: {
             preload: join(__dirname, 'preload.js'),
-            contextIsolation: false,
-            nodeIntegration: true,
+            contextIsolation: true,
+            nodeIntegration: false,
             enableRemoteModule: false,
-            webSecurity: false, // Disable web security for local resources 
+            webSecurity: true, // Disable web security for local resources 
         },
     });
 
-    // win.webContents.openDevTools(); // Open DevTools
-    mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
-    // Uncomment this line to open DevTools
-    // mainWindow.webContents.openDevTools ();
+    const indexPath = path.join(__dirname,'dist', 'index.html');
+    console.log(`Trying to load: ${indexPath}`);  // Debug log
+    mainWindow.loadFile(indexPath).catch((err) => console.error('Failed to load index.html:', err));
 
-    mainWindow.on('closed', () => {
-        // Dereference the window object (optional cleanup)
-    });
 }
 
 async function loadActivePatientFlows() {

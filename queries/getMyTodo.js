@@ -1,9 +1,12 @@
-const { ipcRenderer } = window.require("electron");
+// const { ipcRenderer } = window.require("electron");
 
 const GetMyToDo = async (user) => {
-    const patientData = await ipcRenderer.invoke("load-active-patient-flows"); // Request all JSON data
-    const patients = await window.electron.loadCsv('patients');
-
+    // const patientData = await ipcRenderer.invoke("load-active-patient-flows"); // Request all JSON data
+    // const patientData = await window.electronAPI.loadActivePatientFlows();
+    // const patients = await window.electronAPI.loadCsv('patients');
+    const patientData = await window.electronAPI.loadActivePatientFlows();
+    const patients = await window.electronAPI.loadCsv('patients');
+  
     const personInvolvedId = user._id;
     console.log("personInvolvedId", personInvolvedId);
 

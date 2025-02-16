@@ -1,5 +1,5 @@
 const getNeedsAttention = async () => {
-    const referrals = await window.electron.loadCsv('patients');
+    const referrals = await window.electronAPI.loadCsv('patients');
 
     if (!referrals || !referrals.length) return [];
 

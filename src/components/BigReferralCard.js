@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import './BigReferralCard.css';
 import LittleFlowCard from './flowCards/LittleFlowCard';'../components/flowCards/LittleFlowCard';
-const { ipcRenderer } = window.require("electron");
+// const { ipcRenderer } = window.require("electron");
 import { FaRegWindowClose, FaEdit, FaSave, FaTrash} from 'react-icons/fa'; // FontAwesome icons
 const { updateCSVRow } = require('../../data-preprocessing/updateCSVRow');
 
@@ -20,8 +20,13 @@ const BigReferralCard = ({ referral, setChangelog,changelog, onClose, refresh, h
     
     const getFlows = async () => {
         try {
-            const data = await ipcRenderer.invoke("load-all-json"); // Request all JSON data
-            const allActivePatientFlows = await ipcRenderer.invoke("load-active-patient-flows"); // Request all JSON data
+            // const data = await ipcRenderer.invoke("load-all-json"); // Request all JSON data
+            // const allActivePatientFlows = await ipcRenderer.invoke("load-active-patient-flows"); // Request all JSON data
+            // const data = await window.electronAPI.loadAllJson();
+            // const allActivePatientFlows = await window.electronAPI.loadActivePatientFlows();
+            const data = await window.electronAPI.loadAllJson(); // Replacing ipcRenderer with electronAPI
+            const allActivePatientFlows = await window.electronAPI.loadActivePatientFlows(); // Replacing ipcRenderer with electronAPI
+        
             setAllPatientFlows(allActivePatientFlows)
             // const curentPatientActiveFlows = allActivePatientFlows[referral.mrn]
             setAllFlows(data); // all flows that exists for the organization 
@@ -62,12 +67,12 @@ const BigReferralCard = ({ referral, setChangelog,changelog, onClose, refresh, h
             if (allPatientFlows[referral.MRN].find(flow => flow.data.id === selectedFlow.data.id)) return;
             let newFlow = {...allPatientFlows}
             newFlow[referral.MRN].push(selectedFlow)
-            window.electron.saveJsonFile('patient-flows.json', newFlow);
+            window.electronAPI.saveJsonFile('patient-flows.json', newFlow);
         } else {
             let newFlow = {...allPatientFlows}
             newFlow[referral.MRN] = [selectedFlow]
             console.log("New FLow", newFlow)
-            window.electron.saveJsonFile('patient-flows.json', newFlow);
+            window.electronAPI.saveJsonFile('patient-flows.json', newFlow);
         }
         
         // update the changelog
@@ -82,7 +87,7 @@ const BigReferralCard = ({ referral, setChangelog,changelog, onClose, refresh, h
                 action: 'Flow Added'
             }
         setChangelog([...changelog, changes]);
-        window.electron.saveCsvFile('changelog.csv', [...changelog, changes]);
+        window.electronAPI.saveCsvFile('changelog.csv', [...changelog, changes]);
         
         refresh(); 
         getFlows();
@@ -95,7 +100,7 @@ const BigReferralCard = ({ referral, setChangelog,changelog, onClose, refresh, h
         let updatedCurrentPatientFlows = currrentPatientFlows.map(flow => flow.data.id === flowToSave.id ? {...flow, data: flowToSave} : flow);
         newFlows[referral.MRN] = updatedCurrentPatientFlows
 
-        window.electron.saveJsonFile('patient-flows.json', newFlows);
+        window.electronAPI.saveJsonFile('patient-flows.json', newFlows);
 
         // update the changelog 
         const date = new Date().toISOString();
@@ -111,7 +116,7 @@ const BigReferralCard = ({ referral, setChangelog,changelog, onClose, refresh, h
             }
         ]
         setChangelog([...changelog, ...changes]);
-        window.electron.saveCsvFile('changelog.csv', [...changelog, ...changes]);
+        window.electronAPI.saveCsvFile('changelog.csv', [...changelog, ...changes]);
 
         setActiveFlows(newFlows[referral.MRN]);
         getFlows(); // update the flows so they automatically update
@@ -122,7 +127,7 @@ const BigReferralCard = ({ referral, setChangelog,changelog, onClose, refresh, h
         let currrentPatientFlows = newFlows[referral.MRN]
         let updatedCurrentPatientFlows = currrentPatientFlows.filter(flow => flow.data.id !== flowToRemove.id);
         newFlows[referral.MRN] = updatedCurrentPatientFlows
-        window.electron.saveJsonFile('patient-flows.json', newFlows);
+        window.electronAPI.saveJsonFile('patient-flows.json', newFlows);
 
         // update the changelog
         const date = new Date().toISOString();
@@ -138,7 +143,7 @@ const BigReferralCard = ({ referral, setChangelog,changelog, onClose, refresh, h
             }
         ]
         setChangelog([...changelog, ...changes]);
-        window.electron.saveCsvFile('changelog.csv', [...changelog, ...changes]);
+        window.electronAPI.saveCsvFile('changelog.csv', [...changelog, ...changes]);
 
         setActiveFlows(newFlows[referral.MRN]);
         getFlows(); // update the flows so they automatically
@@ -170,7 +175,7 @@ const BigReferralCard = ({ referral, setChangelog,changelog, onClose, refresh, h
             }).filter(change => change !== null)
         ]
         setChangelog([...changelog, ...changes]);
-        window.electron.saveCsvFile('changelog.csv', [...changelog, ...changes]);
+        window.electronAPI.saveCsvFile('changelog.csv', [...changelog, ...changes]);
     
         console.log("Referral updated successfully");
         refresh();

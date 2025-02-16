@@ -7,7 +7,7 @@ const OneDrivePathSetup = ({ oneDrivePath, setOneDrivePath }) => {
 
     const fetchOneDrivePath = async () => {
         try {
-            const path = await window.electron.getOneDrivePath();
+            const path = await window.electronAPI.getOneDrivePath();
             setOneDrivePath(path);
         } catch (error) {
             console.error('Error fetching OneDrive path:', error);
@@ -17,7 +17,7 @@ const OneDrivePathSetup = ({ oneDrivePath, setOneDrivePath }) => {
     const configureOneDrivePath = async () => {
         console.log('Configuring OneDrive path...');
         try {
-            const path = await window.electron.ensureOneDrivePath();
+            const path = await window.electronAPI.ensureOneDrivePath();
             setOneDrivePath(path);
         } catch (error) {
             console.error('Error configuring OneDrive path:', error);

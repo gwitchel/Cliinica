@@ -13,7 +13,7 @@ const PatientHeaders = () => {
 
     const loadHeaders = async () => {
         try {
-            const data = await window.electron.loadCsv('patients');
+            const data = await window.electronAPI.loadCsv('patients');
             if (data && data.length > 0) {
                 const firstRow = data[0];
                 const keys = Object.keys(firstRow);
@@ -76,7 +76,7 @@ const PatientHeaders = () => {
         }
 
         try {
-            const data = await window.electron.loadCsv('patients');
+            const data = await window.electronAPI.loadCsv('patients');
             if (data && data.length > 0) {
                 const originalHeaders = Object.keys(data[0]);
 
@@ -93,7 +93,7 @@ const PatientHeaders = () => {
                     return newRow;
                 });
 
-                await window.electron.saveCsvFile('patients.csv', updatedData);
+                await window.electronAPI.saveCsvFile('patients.csv', updatedData);
                 setHeaders([...editedHeaders]); // Update headers only after saving
                 // alert('Success: Headers updated successfully!');
             }

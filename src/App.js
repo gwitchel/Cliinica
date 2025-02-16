@@ -28,15 +28,15 @@ const App = () => {
     const needOnboarding = async () => {
         try {
             // 1. Check OneDrive path
-            const path = await window.electron.getOneDrivePath();
+            const path = await window.electronAPI.getOneDrivePath();
             if (!path) {
                 console.log('No OneDrive path found.');
                 return true;
             }
     
             // 2. Load CSV files
-            const organizations = await window.electron.loadCsv('organization');
-            const patients = await window.electron.loadCsv('patients');
+            const organizations = await window.electronAPI.loadCsv('organization');
+            const patients = await window.electronAPI.loadCsv('patients');
     
             // 3. Organization checks:
             //    - Must have at least one member
@@ -83,7 +83,7 @@ const App = () => {
 
     const loadOrganization = async () => {
         try {
-            const orgData = await window.electron.loadCsv('organization');
+            const orgData = await window.electronAPI.loadCsv('organization');
             setOrganization(orgData);
         } catch (error) {
             console.error('Error loading organization data:', error);
@@ -94,7 +94,7 @@ const App = () => {
         const selectedUser = organization.find(user => user._id === selectedUserId);
         if (selectedUser) {
             try {
-                await window.electron.saveJsonFile('user-profile.json', selectedUser);
+                await window.electronAPI.saveJsonFile('user-profile.json', selectedUser);
                 setUserProfile(selectedUser);
             } catch (error) {
                 console.error('Error saving user profile:', error);

@@ -4,8 +4,6 @@ import './LittleFlowCard.css';
 import PersonPill from '../PeopleCards/PersonPill';
 import { FaEdit, FaSave, FaTrash } from 'react-icons/fa';
 
-const { ipcRenderer } = window.require("electron");
-
 const LittleFlowCard = ({ flow, onSave, onDelete }) => {
     const [people, setPeople] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
@@ -15,7 +13,7 @@ const LittleFlowCard = ({ flow, onSave, onDelete }) => {
     useEffect(() => {
         const loadOrganizations = async () => {
             try {
-                const processedData = await window.electron.loadCsv('organization');
+                const processedData = await window.electronAPI.loadCsv('organization');
                 setPeople(processedData);
             } catch (error) {
                 console.error('Error loading organizations data:', error);

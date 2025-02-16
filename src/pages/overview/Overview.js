@@ -32,7 +32,7 @@ const Overview = ({ userProfile }) => {
 
     const loadChangelog = async () => {
         try {
-            console.log('Loading changelog...');
+            console.log('Loading changelog...');electronAPI
             const processedData = await window.electron.loadCsv('changelog');
             setChangelog(processedData);
         } catch (error) {
@@ -47,7 +47,7 @@ const Overview = ({ userProfile }) => {
     const loadData = async () => {
         try {
             console.log('Loading referrals...');
-            const processedData = await window.electron.loadCsv('patients');
+            const processedData = await window.electronAPI.loadCsv('patients');
             console.log("CREATING PATEITNS FOUND PATIENTS ",processedData )
 
             const nextSteps = await GetMyToDo(userProfile);
@@ -60,12 +60,12 @@ const Overview = ({ userProfile }) => {
             if (processedData.length === 0) {
                 console.warn('No Referrals Data - Creating default CSV file');
                 console.log("CREATING PATEITNS dsssssss")
-                await window.electron.saveCsvFile('patients.csv', [{ MRN: '', 'Patient Name': '' }]);
+                await window.electronAPI.saveCsvFile('patients.csv', [{ MRN: '', 'Patient Name': '' }]);
             }
         } catch (error) {
             console.warn('Error loading referrals, creating default CSV file', error);
             console.log("CREATING PATEITNS dsssssss")
-            await window.electron.saveCsvFile('patients.csv', [{ MRN: '', 'Patient Name': '' }]);
+            await window.electronAPI.saveCsvFile('patients.csv', [{ MRN: '', 'Patient Name': '' }]);
         }
     };
 
@@ -92,7 +92,7 @@ const Overview = ({ userProfile }) => {
         setFilteredReferrals(updatedReferrals);
     
         // Save to CSV
-        await window.electron.saveCsvFile('patients.csv', updatedReferrals);
+        await window.electronAPI.saveCsvFile('patients.csv', updatedReferrals);
     
         setShowAddPatientModal(false); // Close modal after adding
     };
@@ -144,7 +144,7 @@ const Overview = ({ userProfile }) => {
         setReferrals(updatedReferrals);
         setFilteredReferrals(updatedReferrals);
         setSelectedReferral(null);
-        window.electron.saveCsvFile('patients.csv', updatedReferrals);
+        window.electronAPI.saveCsvFile('patients.csv', updatedReferrals);
 
         // Update the changelog to reflect the deletion of a patient
         const change = {
@@ -157,7 +157,7 @@ const Overview = ({ userProfile }) => {
             action: 'Patient Deleted'
         };
         setChangelog([...changelog, change]);
-        window.electron.saveCsvFile('changelog.csv', [...changelog, change]);
+        window.electronAPI.saveCsvFile('changelog.csv', [...changelog, change]);
         handleClosePopup();
         loadData();
     };

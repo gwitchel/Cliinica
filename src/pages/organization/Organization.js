@@ -16,7 +16,7 @@ const Organization = ({ userProfile, setUpdatedOrganization }) => {
 
   const loadOrganizations = async () => {
     try {
-      const processedData = await window.electron.loadCsv("organization");
+      const processedData = await window.electronAPI.loadCsv("organization");
       setOrganizations(processedData);
     } catch (error) {
       console.error("Error loading organizations data:", error);
@@ -64,7 +64,7 @@ const Organization = ({ userProfile, setUpdatedOrganization }) => {
 
     setOrganizations(updatedList);
     setUpdatedOrganization(updatedList);
-    window.electron.saveCsvFile("organization.csv", updatedList);
+    window.electronAPI.saveCsvFile("organization.csv", updatedList);
     setShowModal(false);
   };
 
@@ -81,7 +81,7 @@ const Organization = ({ userProfile, setUpdatedOrganization }) => {
 
         const updatedList = organizations.filter((_, index) => index !== memberToDelete);
         setOrganizations(updatedList);
-        window.electron.saveCsvFile("organization.csv", updatedList);
+        window.electronAPI.saveCsvFile("organization.csv", updatedList);
         setShowDeleteConfirmation(false);
         setMemberToDelete(null);
     }

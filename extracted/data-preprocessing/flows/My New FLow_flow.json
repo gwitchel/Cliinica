@@ -1,0 +1,31 @@
+{
+  "title": "My New FLow",
+  "description": "flow description ",
+  "id": 1733037529130,
+  "flows": [
+    [
+      {
+        "id": 1733037529134,
+        "title": "step 1",
+        "description": "description of step 1",
+        "peopleInvolved": [
+          "000001"
+        ],
+        "deliverables": [
+          "Here is the deliverable "
+        ]
+      },
+      {
+        "id": 1733037550937,
+        "title": "Here is a step 2",
+        "description": "desc",
+        "peopleInvolved": [
+          "000001"
+        ],
+        "deliverables": [
+          "Here's a deliverable "
+        ]
+      }
+    ]
+  ]
+}

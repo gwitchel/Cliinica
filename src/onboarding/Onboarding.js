@@ -17,7 +17,7 @@ const Onboarding = ({ setShowOnboarding }) => {
     // ----- STEP 2: ORGANIZATION -----
     const loadOrganizations = async () => {
         try {
-            const processedData = await window.electron.loadCsv('organization');
+            const processedData = await window.electronAPI.loadCsv('organization');
             setOrganizations(processedData);
         } catch (error) {
             console.error('Error loading organizations data:', error);

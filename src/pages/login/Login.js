@@ -9,7 +9,7 @@ const Login = ({ setUserProfile }) => {
     useEffect(() => {
         const loadOrganization = async () => {
             try {
-                const processedData = await window.electron.loadCsv('organization');
+                const processedData = await window.electronAPI.loadCsv('organization');
                
             
                 setOrganization(processedData);
@@ -21,7 +21,7 @@ const Login = ({ setUserProfile }) => {
 
         const loadUsageRecord = async () => {
             try {
-                const processedData = await window.electron.loadCsv('usage-record');
+                const processedData = await window.electronAPI.loadCsv('usage-record');
                 setUsageRecord(processedData);
                 console.log('Usage Record:', processedData);
             } catch (error) {
@@ -51,7 +51,7 @@ const Login = ({ setUserProfile }) => {
                 start_time: new Date().toISOString(),
             };
 
-            window.electron.saveCsvFile('usage-record.csv', [...usageRecord, newRecord]);
+            window.electronAPI.saveCsvFile('usage-record.csv', [...usageRecord, newRecord]);
         } else {
             alert('Invalid username or password');
         }

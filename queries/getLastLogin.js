@@ -1,6 +1,6 @@
 
 async function getLastLogin(profile) {
-    const usageRecord = await window.electron.loadCsv('usage-record');
+    const usageRecord = await window.electronAPI.loadCsv('usage-record');
 
         // Find the sessions for the user
         const userSessions = usageRecord.filter((entry) => entry._id === profile._id);

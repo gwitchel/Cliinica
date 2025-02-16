@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-const { ipcRenderer } = window.require("electron");
+// const { ipcRenderer } = window.require("electron");
 import IntakeFlowCard from "./IntakeFlowCard";
 import BigIntakeFlowCard from "./BigIntakeFlowCard";
 import NewIntakeFlow from "./NewIntakeFlow";
@@ -16,7 +16,7 @@ const IntakeFlows = ({userProfile}) => {
   console.log("userProfile.isAdmin", userProfile.isAdmin)
   const fetchOrganization = async () => {
     try {
-      const data = await window.electron.loadCsv('organization');
+      const data = await window.electronAPI.loadCsv('organization');
       setOrganization(data); // Set the loaded data
     } catch (err) {
       console.warn("Error loading JSON data: " + err.message);
@@ -29,7 +29,8 @@ const IntakeFlows = ({userProfile}) => {
 
   const fetchJsonData = async () => {
     try {
-      const data = await ipcRenderer.invoke("load-all-json"); // Request all JSON data
+      // const data = await ipcRenderer.invoke("load-all-json"); // Request all JSON data
+      const data = await window.electronAPI.loadAllJson();
       setJsonData(data); // Set the loaded data
     } catch (err) {
       setError("Error loading JSON data: " + err.message);
@@ -97,7 +98,7 @@ const IntakeFlows = ({userProfile}) => {
                 flow ={selectedFlow}
                 onDelete={(flow) => {
                   if(organization && userProfile && userProfile.isAdmin){
-                    window.electron.deleteFlow(flow.data.title); setSelectedFlow(null), fetchJsonData()
+                    window.electronAPI.deleteFlow(flow.data.title); setSelectedFlow(null), fetchJsonData()
                   } else {
                     alert('You do not have permission to delete this flow')
                   }

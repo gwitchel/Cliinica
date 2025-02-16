@@ -1,6 +1,6 @@
 const getRecentReferralChanges = async (number) => {
     try {
-        const changelog = await window.electron.loadCsv('changelog');
+        const changelog = await window.electronAPI.loadCsv('changelog');
 
         // Object to track unique MRNs
         const uniqueUsers = new Set();
