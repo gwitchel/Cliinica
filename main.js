@@ -192,7 +192,7 @@ ipcMain.handle('load-csv', async (event, sheetName) => {
         const basePath = await getBasePath();
 
         const filePath = path.join(basePath, `${sheetName}.csv`);
-        fs.writeFileSync(filePath, defaultContent, 'utf8');
+        fs.writeFileSync(filePath, '', 'utf8');
     }
 
     return await loadCsvData(sheetName);

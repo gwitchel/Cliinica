@@ -5,7 +5,7 @@
   "main": "main.js",
   "author": "Georgia Witchel",
   "scripts": {
-    "start": "webpack serve --mode development",
+    "start": "webpack serve --mode development & electron .",
     "electron-start": "electron .",
     "build:react": "webpack --mode production",
     "build": "npm run build:react && electron-builder",
@@ -44,7 +44,7 @@
     "@babel/preset-react": "^7.25.9",
     "babel-loader": "^9.2.1",
     "copy-webpack-plugin": "^12.0.2",
-    "electron": "^26.6.10",
+    "electron": "24.2.0",
     "electron-builder": "^25.1.8",
     "electron-notarize": "^1.2.2",
     "html-webpack-plugin": "^5.6.3",
@@ -108,14 +108,17 @@
       "output": "dist"
     },
     "mac": {
-      "target": "mas",
+      "target": ["dmg"],
       "provisioningProfile": "build/Cliinica_provisioning_profile_2.provisionprofile",
-      "entitlements": "build/entitlements.mas.plist",
+      "identity": "georgia witchel (RQ535HNNVW)",
+      "hardenedRuntime": true,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.inherit.plist",
       "helperBundleId": "com.georgiawitchel.cliinica.helper",
       "icon": "assets/logo.icns",
       "minimumSystemVersion": "12.0"
     },
-    "afterSign": "afterSign.js",
+    "afterSign": "build/notarize.js",
     "win": {
       "target": [
         "nsis",
