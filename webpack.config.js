@@ -12,16 +12,10 @@ module.exports = (env, argv) => ({
         clean: true,
     },
     plugins: [
-        // new HtmlWebpackPlugin({
-        //     template: './src/index.html', // Points to your React HTML template
-        //     filename: 'index.html',
-        //     inject: 'body', // Ensure script is added properly
-
-        // }),
         new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, 'src', 'index.html'),
+            template: './src/index.html', // Points to your React HTML template
             filename: 'index.html',
-            inject: 'body',
+
         }),
         new CopyWebpackPlugin({
             patterns: [

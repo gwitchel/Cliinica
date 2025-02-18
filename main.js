@@ -104,18 +104,29 @@ function createWindow() {
     icon: path.join(process.resourcesPath, process.platform === 'darwin' ? 'assets/logo.png' : 'assets/logo.ico'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      contextIsolation: true,
-      nodeIntegration: false,
-      enableRemoteModule: false,
-      webSecurity: true,
-      backgroundThrottling: false,
-      sandbox: false, // Ensure ASAR file access
     },
   });
 
+  const appPath = path.join(app.getAppPath(), "src") // Get the app path
+  console.log(`📂 App Path: ${appPath}`);
+
+  // List files in the directory
+  fs.readdir(appPath, (err, files) => {
+    if (err) {
+      console.error('❌ Error reading app directory:', err);
+      return;
+    }
+    console.log('📄 Files in app.getAppPath():');
+    files.forEach((file) => console.log(`  - ${file}`));
+  });
+
   // Use app.getAppPath() to properly resolve ASAR paths
-  const indexPath = path.join(app.getAppPath(), 'dist', 'index.html');
+  const indexPath = path.join(app.getAppPath(), 'src', 'index.html');
+  console.log("INDEX PATH", app.getAppPath())
   console.log(`🛠️ Trying to load: ${indexPath}`);
+
+  // mainWindow.loadURL('file:///path/to/example.asar/static/index.html')
+
 
   mainWindow.loadFile(indexPath)
     .then(() => console.log("✅ Successfully loaded index.html"))
@@ -456,10 +467,10 @@ ipcMain.handle('get-one-drive-path', async () => {
 app.whenReady()
     .then(async () => {
         try {
-          const asarPath = path.join(app.getAppPath(), 'dist');
-          console.log(`📂 Listing files in: ${asarPath}`);
-          const files = fs.readdirSync(asarPath);
-          files.forEach(file => console.log(`  📄 ${file}`));
+          // const asarPath = path.join(app.getAppPath(), 'dist');
+          // console.log(`📂 Listing files in: ${asarPath}`);
+          // const files = fs.readdirSync(asarPath);
+          // files.forEach(file => console.log(`  📄 ${file}`));
           createWindow();
         } catch (err) {
             console.error('Error during OneDrive setup:', err);

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    
+    <!-- Allow read and write access to user-selected files -->
+    <key>com.apple.security.files.user-selected.read-write</key>
+    <true/>
+
+    <!-- Allow access to files in the user's home directory -->
+    <key>com.apple.security.files.home-dir.read-write</key>
+    <true/>
+
+    <!-- Allow unrestricted access to file system (caution: limited to non-App Store apps) -->
+    <key>com.apple.security.files.all</key>
+    <true/>
+
+    <!-- Allow access to network resources -->
+    <key>com.apple.security.network.client</key>
+    <true/>
+    <key>com.apple.security.network.server</key>
+    <true/>
+
+    <!-- Allow access to IPC (Inter-Process Communication) -->
+    <key>com.apple.security.inherit</key>
+    <true/>
+
+    <!-- Allow debugging (useful for development; remove for production release) -->
+    <key>com.apple.security.cs.debugger</key>
+    <true/>
+
+    <!-- Allow JIT (Just-In-Time) compilation for performance-critical code -->
+    <key>com.apple.security.cs.allow-jit</key>
+    <true/>
+
+    <!-- Allow execution of unsigned libraries (if needed) -->
+    <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+    <true/>
+</dict>
+</plist>

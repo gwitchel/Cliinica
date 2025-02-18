@@ -59,25 +59,7 @@
   },
   "build": {
     "appId": "com.georgiawitchel.cliinica",
-    "productName": "Cliinica",
-    "files": [
-      "dist/**/*",
-      "node_modules/**/*",
-      "data-preprocessing/**/*",
-      "public/**/*",
-      "preload.js",
-      "assets/**/*",
-      "main.js",
-      "package.json",
-      "patients.csv",
-      "changelog.csv",
-      "organization.csv",
-      "patient-flows.json",
-      "user-profile.json",
-      "flows/**/*",
-      "!OneDrive/**",
-      "dist/index.html"
-    ],
+    "productName": "Cliinica",    
     "extraResources": [
       {
         "from": "patients.csv",
@@ -109,6 +91,7 @@
         "ONEDRIVE_PATH": "${env.ONEDRIVE_PATH}"
       }
     },
+
     "directories": {
       "output": "dist"
     },
