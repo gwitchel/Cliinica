@@ -7,7 +7,19 @@ const { join, basename } = require('path');
 const csvParser = require('csv-parser');
 const os = require('os'); // For detecting user-specific paths
 const { get } = require('http');
+const asar = require('asar');  // ✅ Add this at the top
 
+
+
+function listFiles(directory) {
+  try {
+    const files = fs.readdirSync(directory);
+    console.log(`📂 Listing files in: ${directory}`);
+    files.forEach(file => console.log(`  📄 ${file}`));
+  } catch (err) {
+    console.error(`❌ Error reading directory ${directory}:`, err);
+  }
+}
 
 process.on('uncaughtException', (error) => {
   const errorLogPath = path.join(app.getPath('userData'), 'error.log');
@@ -37,34 +49,80 @@ async function getBasePath() {
     return path.normalize(oneDrivePath); // Normalize for platform compatibility
 }
 
+
+
+
+app.commandLine.appendSwitch('disable-gpu');
+app.commandLine.appendSwitch('disable-software-rasterizer');
+app.commandLine.appendSwitch('disable-gpu-compositing');
+app.commandLine.appendSwitch('no-sandbox');
+app.disableHardwareAcceleration(); // Existing fix
+
+
+
+function extractAsar() {
+  const asarPath = path.join(process.resourcesPath, 'app.asar');
+  const extractPath = path.join(app.getPath('userData'), 'extracted-asar');
+
+  if (!fs.existsSync(extractPath)) {
+    console.log("🔍 Extracting ASAR...");
+    asar.extractAll(asarPath, extractPath);
+  } else {
+    console.log("✅ ASAR already extracted.");
+  }
+
+  return extractPath;
+}
+
+function checkIndexFile(indexPath) {
+  try {
+    console.log(`🔍 Checking if file exists: ${indexPath}`);
+    if (!fs.existsSync(indexPath)) {
+      console.error(`❌ ERROR: index.html NOT FOUND at ${indexPath}`);
+      return false;
+    }
+
+    const content = fs.readFileSync(indexPath, 'utf8');
+    console.log("📄 index.html content preview (first 200 chars):");
+    console.log(content.substring(0, 200));
+
+    return true;
+  } catch (err) {
+    console.error("❌ Error reading index.html:", err);
+    return false;
+  }
+}
+
 function createWindow() {
-    if (process.platform === 'darwin') {
-        app.dock.setIcon(path.join(__dirname, 'assets/logo.png'));
-    }
-    if (process.platform === 'win32') {
-        app.dock.setIcon(path.join(__dirname, 'assets','logo.ico'));
-    }
-    
-    app.setName('Cliinica');
+  if (process.platform === 'darwin') {
+    app.dock.setIcon(path.join(__dirname, 'assets/logo.png'));
+  }
+  
+  const mainWindow = new BrowserWindow({
+    width: 1605,
+    height: 980,
+    icon: path.join(process.resourcesPath, process.platform === 'darwin' ? 'assets/logo.png' : 'assets/logo.ico'),
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+      enableRemoteModule: false,
+      webSecurity: true,
+      backgroundThrottling: false,
+      sandbox: false, // Ensure ASAR file access
+    },
+  });
 
-    const mainWindow = new BrowserWindow({
-        width: 1605,
-        height: 980,
-        icon:  path.join(process.resourcesPath, process.platform === 'darwin' ? 'assets/logo.png' : 'assets/logo.ico'),
-        webPreferences: {
-            preload: join(__dirname, 'preload.js'),
-            contextIsolation: true,
-            nodeIntegration: false,
-            enableRemoteModule: false,
-            webSecurity: true, // Disable web security for local resources 
-        },
-    });
+  // Use app.getAppPath() to properly resolve ASAR paths
+  const indexPath = path.join(app.getAppPath(), 'dist', 'index.html');
+  console.log(`🛠️ Trying to load: ${indexPath}`);
 
-    const indexPath = path.join(__dirname,'dist', 'index.html');
-    console.log(`Trying to load: ${indexPath}`);  // Debug log
-    mainWindow.loadFile(indexPath).catch((err) => console.error('Failed to load index.html:', err));
+  mainWindow.loadFile(indexPath)
+    .then(() => console.log("✅ Successfully loaded index.html"))
+    .catch(err => console.error('❌ Failed to load index.html:', err));
 
 }
+
 
 async function loadActivePatientFlows() {
   try {
@@ -87,39 +145,30 @@ async function loadActivePatientFlows() {
 }
 
 async function loadAllFlows() {
-    try {       
-        const basePath = await getBasePath();
-        const flowsDirectory = path.join(basePath, 'flows');
-        try {
-          await fs.access(flowsDirectory);
-        } catch (err) {
-            await fs.promises.mkdir(flowsDirectory, { recursive: true });            // Directory doesn't exist, create it
-        }
+  try {
+    const basePath = await getBasePath();
+    const flowsDirectory = path.join(basePath, 'flows');
 
-        // Use fs.promises.readdir to list files in the directory
-        const files = await promises.readdir(flowsDirectory);  // Correctly using fs.promises.readdir
-        console.log("Files in directory:", files);
-        // Filter to only JSON files
-        const jsonFiles = files.filter(file => file.endsWith('.json'));
-
-        // Read and parse each JSON file using fs.promises.readFile
-        const allJsonData = await Promise.all(
-            jsonFiles.map(async (file) => {
-                const filePath = path.join(flowsDirectory, file);
-                const fileContent = await promises.readFile(filePath, 'utf8');  // Correct usage of fs.promises.readFile
-                return {
-                    name: file,  // Store the filename
-                    data: JSON.parse(fileContent)  // Parse and return the data
-                };
-            })
-        );
-
-        return allJsonData;
-    } catch (error) {
-        console.error("Error loading JSON files:", error);
-        throw error; // Rethrow error to handle it in calling code
+    try {
+      await fs.promises.access(flowsDirectory);
+    } catch (err) {
+      await fs.promises.mkdir(flowsDirectory, { recursive: true });
     }
+
+    const files = await fs.promises.readdir(flowsDirectory);
+    const jsonFiles = files.filter(file => file.endsWith('.json'));
+
+    return await Promise.all(jsonFiles.map(async (file) => {
+      const filePath = path.join(flowsDirectory, file);
+      const fileContent = await fs.promises.readFile(filePath, 'utf8');
+      return { name: file, data: JSON.parse(fileContent) };
+    }));
+  } catch (error) {
+    console.error("Error loading JSON files:", error);
+    throw error;
+  }
 }
+
 
 // IPC handler for loading all JSON files from the flows directory
 ipcMain.handle('load-all-json', async (event) => {
@@ -322,10 +371,10 @@ ipcMain.on('delete-flow', (event, flowName) => {
     deleteFlowFile(flowName); // Delete the flow file
 });
 
-  ipcMain.on('save-json', (event, filename, data) => {
-    console.log("saving json file")
-    deleteFlowFile(filename, data); // Save CSV data to file
-});
+//   ipcMain.on('save-json', (event, filename, data) => {
+//     console.log("saving json file")
+//     deleteFlowFile(filename, data); // Save CSV data to file
+// });
 
 const saveFlow = async (flow) => {
     try {
@@ -365,45 +414,24 @@ ipcMain.handle('ensure-one-drive-path', async () => {
 
 // Ensure OneDrive path is set
 async function ensureOneDrivePath() {
-    try {
-        // Path to the configuration file
-        const cp = path.join(app.getPath('userData'), 'config.json');
+  const configPath = path.join(app.getPath('userData'), 'config.json');
 
-        // Show a dialog to select the OneDrive folder
-        const userResponse = await dialog.showOpenDialog({
-            title: "Select Your OneDrive Folder",
-            properties: ["openDirectory"],
-            message: "Please select your OneDrive directory to configure the app.",
-        });
+  const userResponse = await dialog.showOpenDialog({
+    title: "Select Your OneDrive Folder",
+    properties: ["openDirectory"],
+    message: "Please select your OneDrive directory to configure the app.",
+  });
 
-        if (userResponse.canceled || !userResponse.filePaths.length) {
-            console.warn("User canceled the OneDrive folder selection.");
-            return null;
-        }
+  if (userResponse.canceled || !userResponse.filePaths.length) {
+    console.warn("User canceled the OneDrive folder selection.");
+    return null;
+  }
 
-        const selectedPath = userResponse.filePaths[0];
+  const selectedPath = path.normalize(userResponse.filePaths[0]);
+  fs.writeFileSync(configPath, JSON.stringify({ oneDrivePath: selectedPath }, null, 2), 'utf8');
 
-        // Check if the selected path exists
-        if (!fs.existsSync(selectedPath)) {
-            console.error("Selected path does not exist:", selectedPath);
-            throw new Error("Invalid OneDrive path selected.");
-        }
-
-        // Normalize the path for consistency across platforms
-        const normalizedPath = path.normalize(selectedPath);
-
-        // Save the OneDrive path to the config file (overwrite existing file)
-        const configData = { oneDrivePath: normalizedPath };
-        fs.writeFileSync(cp, JSON.stringify(configData, null, 2), 'utf8');
-
-        console.log("OneDrive path configured successfully:", normalizedPath);
-
-        // Return the normalized path
-        return normalizedPath;
-    } catch (error) {
-        console.error("Error ensuring OneDrive path:", error);
-        throw error; // Rethrow the error for further handling
-    }
+  console.log("OneDrive path configured successfully:", selectedPath);
+  return selectedPath;
 }
 
 
@@ -428,12 +456,11 @@ ipcMain.handle('get-one-drive-path', async () => {
 app.whenReady()
     .then(async () => {
         try {
-            // const oneDrivePath = await ensureOneDrivePath();
-            // console.log("OneDrive path successfully set:", oneDrivePath);
-            // basePath = oneDrivePath;
-
-            // Create the main window after OneDrive path is ready
-            createWindow();
+          const asarPath = path.join(app.getAppPath(), 'dist');
+          console.log(`📂 Listing files in: ${asarPath}`);
+          const files = fs.readdirSync(asarPath);
+          files.forEach(file => console.log(`  📄 ${file}`));
+          createWindow();
         } catch (err) {
             console.error('Error during OneDrive setup:', err);
             dialog.showErrorBox(

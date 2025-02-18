@@ -10,12 +10,14 @@
     "build:react": "webpack --mode production",
     "build": "npm run build:react && electron-builder",
     "build:local": "webpack",
-    "build:win": "electron-builder --win"
+    "build:win": "electron-builder --win",
+    "build:all": "npm run build:react && npx electron-builder --mac --x64 --arm64 --universal"
   },
   "keywords": [],
   "license": "MIT",
   "dependencies": {
     "@iconify/react": "^5.2.0",
+    "asar": "^3.2.0",
     "browserify-fs": "^1.0.0",
     "buffer": "^6.0.3",
     "css-loader": "^7.1.2",
@@ -29,6 +31,7 @@
     "path-browserify": "^1.0.1",
     "process": "^0.11.10",
     "prop-types": "^15.8.1",
+    
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.3.0",
@@ -51,7 +54,8 @@
     "terser-webpack-plugin": "^5.3.3",
     "webpack": "^5.96.1",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.1.0"
+    "webpack-dev-server": "^5.1.0",
+    "asar": "^3.2.5"
   },
   "build": {
     "appId": "com.georgiawitchel.cliinica",
@@ -72,7 +76,7 @@
       "user-profile.json",
       "flows/**/*",
       "!OneDrive/**",
-      "index.html"
+      "dist/index.html"
     ],
     "extraResources": [
       {
@@ -108,14 +112,15 @@
     "directories": {
       "output": "dist"
     },
-    
     "mac": {
-      "target": ["dmg"],
+      "target": [
+        "dmg"
+      ],
       "provisioningProfile": "build/Cliinica_global.provisionprofile",
       "identity": "georgia witchel (RQ535HNNVW)",
       "hardenedRuntime": true,
-      "entitlements": "build/entitlements.mac.plist",
-      "entitlementsInherit": "build/entitlements.mac.plist",
+      "entitlements": "build/Entitlements.mac.plist",
+      "entitlementsInherit": "build/Entitlements.child.plist",
       "helperBundleId": "com.georgiawitchel.cliinica.helper",
       "icon": "assets/logo.icns",
       "minimumSystemVersion": "12.0"

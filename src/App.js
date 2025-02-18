@@ -10,7 +10,7 @@ import Navbar from './components/navbar/Navbar';
 import Header from './components/header/Header'
 import Settings from './onboarding/Settings';
 const App = () => {
-    
+    console.log("App.js");
     const [activeTab, setActiveTab] = useState('Patients');
     const [userProfile, setUserProfile] = useState(null);
     const [organization, setOrganization] = useState([]);
